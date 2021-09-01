@@ -1,0 +1,21 @@
+building material:
+  as found:
+    soil:
+      clay:
+      lime:
+      sand:
+    stone:
+      granit:
+      limestone:
+      marble:
+      sandstone:
+      travertine:
+    thatch:
+      reed:
+      bamboo:
+    wood:
+      oak:
+      pine:
+      spruce:
+      larch:
+      fir:
