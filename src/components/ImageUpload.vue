@@ -36,10 +36,10 @@
           </v-chip>
         </v-sheet>
         <v-btn
-          v-on:click="tagImages"
+          v-on:click="onTagImages"
           color="primary"
           :disabled="images.length == 0 || selectedCategories.length == 0"
-          >Tag Image</v-btn
+          >Tag Images</v-btn
         >
       </v-col>
     </v-row>
@@ -49,6 +49,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import download from "downloadjs";
+import piexif from "piexifjs";
 import categories from "../assets/categories.yaml";
 
 @Component
@@ -65,7 +67,8 @@ export default class ImageUpload extends Vue {
   get selectedTags(): string[] {
     return this.selectedCategories
       .flatMap((categories) => categories.split(this.separator))
-      .filter((v, i, a) => a.indexOf(v) === i);
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .sort();
   }
 
   parseTree(obj: unknown, parents: string[] = []): Item[] {
@@ -94,9 +97,27 @@ export default class ImageUpload extends Vue {
     });
   }
 
-  tagImages(): void {
-    this.images.forEach((image) => {
-      console.log(image);
+  blobToBase64(blob: Blob): Promise<string | ArrayBuffer | null> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  onTagImages(): void {
+    const tags = this.selectedTags.join(", ");
+    this.images.forEach((image) => this.tagImage(image, tags));
+  }
+
+  tagImage(image: File, tags: string): void {
+    this.blobToBase64(image).then((data) => {
+      const oldExifObj = piexif.load(data);
+      oldExifObj["0th"][piexif.ImageIFD.ImageDescription] = tags;
+      oldExifObj["Exif"][piexif.ExifIFD.UserComment] = tags;
+      const exifbytes = piexif.dump(oldExifObj);
+      const exifObj = piexif.insert(exifbytes, data);
+      download(exifObj, image.name, image.type);
     });
   }
 }

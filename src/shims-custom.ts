@@ -1,4 +1,6 @@
 declare module "*.yaml" {
-  const content: any;
+  const content: unknown;
   export default content;
 }
+
+declare module "piexifjs";
