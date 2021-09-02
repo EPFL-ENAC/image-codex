@@ -1,5 +1,7 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <v-container>
+    <div>
+      <h1>EAST-CO - IT4R</h1>
+    </div>
+  </v-container>
 </template>

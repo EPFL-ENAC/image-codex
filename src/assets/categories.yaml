@@ -19,3 +19,85 @@ building material:
       spruce:
       larch:
       fir:
+  transformed:
+    brick:
+    concrete:
+    foam:
+    glass:
+    metal:
+      aluminium:
+      bronze:
+      cast iron:
+      copper:
+      iron:
+      stainless steel:
+      zinc:
+    plastic:
+    ceramics:
+    wood-based:
+component:
+  wall:
+    joint pattern:
+    kerb:
+    niche:
+    offset:
+    opening:
+    plaster:
+    base:
+  column:
+    kerb:
+      base:
+      capital:
+    shaft:
+  roof:
+    barrel roof:
+    bow roof:
+    butterfly roof:
+    flat roof:
+    gable roof:
+    hip roof:
+    mansard roof:
+    ridget turret:
+    shed roof:
+    tent roof:
+    purlin roof:
+    rafter roof:
+    kerb:
+      attic:
+      eaves:
+      ridge:
+    opening:
+    offset:
+    plaster:
+  slab:
+    base plate:
+    offset:
+    opening:
+    ramp:
+    ripped ceeling:
+    beam ceeling:
+    joint pattern:
+  beam:
+  door:
+    lintel:
+    reveal:
+    treshold:
+  window:
+    lintel:
+    reveal:
+    sill:
+    skylight:
+  staircase:
+  isolation:
+  technical component:
+geometry:
+  amorphous:
+  asymmetry:
+  curved:
+  edgeed:
+  face:
+  gird:
+  line:
+  point:
+  solid:
+  symmetry:

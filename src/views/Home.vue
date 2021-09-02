@@ -1,5 +1,7 @@
 <template>
-  <image-upload />
+  <v-container>
+    <image-upload />
+  </v-container>
 </template>
 
 <script lang="ts">

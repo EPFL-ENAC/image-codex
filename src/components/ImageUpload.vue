@@ -1,49 +1,57 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12">
-        <v-file-input
-          v-model="images"
-          accept="image/png, image/jpeg, image/bmp"
-          small-chips
-          label="Image"
-          multiple
-          placeholder="Select an image"
-          prepend-icon="mdi-camera"
-          show-size
-        ></v-file-input>
-        <v-sheet>
-          <v-text-field
-            v-model="search"
-            label="Search Categories"
-            hide-details
-            clearable
-          ></v-text-field>
-          <v-treeview
-            v-model="selectedCategories"
-            :items="treeCategories"
-            :search="search"
-            selectable
-            selection-type="independent"
-          ></v-treeview>
-          <v-chip
-            v-for="(selection, i) in selectedTags"
-            :key="i"
-            small
-            class="ma-1"
+  <v-card>
+    <v-card-title>Image Tagging</v-card-title>
+    <v-card-text>
+      <v-file-input
+        v-model="images"
+        accept="image/jpeg"
+        small-chips
+        label="Images"
+        multiple
+        placeholder="Select images"
+        prepend-icon="mdi-image"
+        show-size
+      ></v-file-input>
+      <v-sheet>
+        <v-text-field
+          v-model="search"
+          label="Search Categories"
+          hide-details
+          clearable
+        ></v-text-field>
+        <v-treeview
+          v-model="selectedCategories"
+          :items="treeCategories"
+          :search="search"
+          open-on-click
+          selectable
+          selection-type="independent"
+        ></v-treeview>
+        <v-row class="ma-1">
+          <v-chip-group column>
+            <v-chip v-for="(selection, i) in selectedTags" :key="i" small>
+              {{ selection }}
+            </v-chip>
+          </v-chip-group>
+          <v-btn
+            v-if="selectedCategories.length > 0"
+            @click="selectedCategories = []"
+            icon
           >
-            {{ selection }}
-          </v-chip>
-        </v-sheet>
-        <v-btn
-          v-on:click="onTagImages"
-          color="primary"
-          :disabled="images.length == 0 || selectedCategories.length == 0"
-          >Tag Images</v-btn
-        >
-      </v-col>
-    </v-row>
-  </v-container>
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-row>
+      </v-sheet>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn
+        @click="onTagImages"
+        :disabled="images.length == 0 || selectedCategories.length == 0"
+        color="primary"
+        >Tag Images</v-btn
+      >
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -71,10 +79,12 @@ export default class ImageUpload extends Vue {
       .sort();
   }
 
-  parseTree(obj: unknown, parents: string[] = []): Item[] {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+  parseTree(obj: any, parents: string[] = []): Item[] {
     return Object.entries(obj).flatMap(([key, value]) => {
-      if (typeof value === "object") {
-        const id = [...parents, key];
+      const id = [...parents, key];
+      const type = typeof value;
+      if (type === "object") {
         if (value === null) {
           return [
             {
@@ -92,6 +102,7 @@ export default class ImageUpload extends Vue {
           ];
         }
       } else {
+        console.error(`unexpected type ${type} for key ${id.join(".")}`);
         return [];
       }
     });
