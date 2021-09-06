@@ -17,6 +17,7 @@
           - curl
           - gnupg
           - lsb-release
+          - python3-pip
     - name: Add Docker GPG key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
@@ -30,11 +31,11 @@
           - docker-ce
           - docker-ce-cli
           - containerd.io
-    - name: Install Docker Compose
-      get_url:
-        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
-        dest: /usr/local/bin/docker-compose
-        mode: +x
+    - name: Install python package
+      pip:
+        name:
+          - docker
+          - docker-compose
     - name: Generate SSH key
       openssh_keypair:
         path: ~/.ssh/id_ed25519
@@ -44,3 +45,7 @@
         repo: git@github.com:EPFL-ENAC/image-codex.git
         dest: /opt/image-codex
         accept_hostkey: yes
+    - name: Run Docker Compose
+      community.docker.docker_compose:
+        project_src: /opt/image-codex
+        build: yes

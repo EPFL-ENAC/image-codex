@@ -30,5 +30,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Deploy
 ```
+# Install
+ansible-galaxy collection install community.docker
+
+# Deploy
 ansible-playbook playbook.yml -i inventory.ini
 ```
