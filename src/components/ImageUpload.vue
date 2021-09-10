@@ -3,15 +3,35 @@
     <v-card-title>Image Tagging</v-card-title>
     <v-card-text>
       <v-file-input
-        v-model="images"
+        v-model="imageFiles"
+        @change="onChangeImages"
         accept="image/jpeg"
         small-chips
-        label="Images"
+        label="Select Images"
         multiple
-        placeholder="Select images"
         prepend-icon="mdi-image"
         show-size
       ></v-file-input>
+      <v-row>
+        <v-col v-for="(file, i) in imageFiles" :key="i">
+          <v-img
+            :src="images[i].content"
+            :lazy-src="file.name"
+            contain
+            max-height="256"
+            max-width="256"
+          >
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+              </v-row> </template
+          ></v-img>
+        </v-col>
+      </v-row>
+
       <v-sheet>
         <v-text-field
           v-model="search"
@@ -45,8 +65,8 @@
     </v-card-text>
     <v-card-actions>
       <v-btn
-        @click="onTagImages"
-        :disabled="images.length == 0 || selectedCategories.length == 0"
+        @click="onClickTagImages"
+        :disabled="imageFiles.length == 0 || selectedCategories.length == 0"
         color="primary"
         >Tag Images</v-btn
       >
@@ -66,7 +86,8 @@ export default class ImageUpload extends Vue {
   search = "";
   selectedCategories: string[] = [];
   separator = ";";
-  images: File[] = [];
+  imageFiles: File[] = [];
+  images: Image[] = [];
 
   get treeCategories(): Item[] {
     return this.parseTree(categories);
@@ -108,28 +129,35 @@ export default class ImageUpload extends Vue {
     });
   }
 
-  blobToBase64(blob: Blob): Promise<string | ArrayBuffer | null> {
+  mapFileToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
+      reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
   }
 
-  onTagImages(): void {
+  onChangeImages(): void {
+    const files = this.imageFiles;
+    Promise.all(files.map(this.mapFileToBase64)).then((contents) => {
+      return (this.images = contents.map(
+        (content, i) => new Image(files[i], content)
+      ));
+    });
+  }
+
+  onClickTagImages(): void {
     const tags = this.selectedTags.join(", ");
     this.images.forEach((image) => this.tagImage(image, tags));
   }
 
-  tagImage(image: File, tags: string): void {
-    this.blobToBase64(image).then((data) => {
-      const oldExifObj = piexif.load(data);
-      oldExifObj["0th"][piexif.ImageIFD.ImageDescription] = tags;
-      oldExifObj["Exif"][piexif.ExifIFD.UserComment] = tags;
-      const exifbytes = piexif.dump(oldExifObj);
-      const exifObj = piexif.insert(exifbytes, data);
-      download(exifObj, image.name, image.type);
-    });
+  tagImage(image: Image, tags: string): void {
+    const oldExifObj = piexif.load(image.content);
+    oldExifObj["0th"][piexif.ImageIFD.ImageDescription] = tags;
+    oldExifObj["Exif"][piexif.ExifIFD.UserComment] = tags;
+    const exifbytes = piexif.dump(oldExifObj);
+    const exifObj = piexif.insert(exifbytes, image.content);
+    download(exifObj, image.name, image.type);
   }
 }
 
@@ -137,5 +165,14 @@ interface Item {
   id: string;
   name: string;
   children?: Item[];
+}
+
+class Image {
+  public name: string;
+  public type: string;
+  constructor(file: File, public content: string) {
+    this.name = file.name;
+    this.type = file.type;
+  }
 }
 </script>
