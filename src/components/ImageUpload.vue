@@ -1,73 +1,97 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title>Image Tagging</v-card-title>
     <v-card-text>
-      <v-file-input
-        v-model="imageFiles"
-        @change="onChangeImages"
-        accept="image/jpeg"
-        small-chips
-        label="Select Images"
-        multiple
-        prepend-icon="mdi-image"
-        show-size
-      ></v-file-input>
       <v-row>
-        <v-col v-for="(file, i) in imageFiles" :key="i">
-          <v-img
-            :src="images[i].content"
-            :lazy-src="file.name"
-            contain
-            max-height="256"
-            max-width="256"
-          >
-            <template v-slot:placeholder>
-              <v-row class="fill-height ma-0" align="center" justify="center">
-                <v-progress-circular
-                  indeterminate
-                  color="primary"
-                ></v-progress-circular>
-              </v-row> </template
-          ></v-img>
+        <v-col cols="8">
+          <v-file-input
+            v-model="imageFiles"
+            accept="image/jpeg"
+            small-chips
+            label="Select Images"
+            multiple
+            prepend-icon="mdi-image"
+            show-size
+            @change="onChangeImages"
+          ></v-file-input>
+          <v-row>
+            <v-col v-for="(file, i) in imageFiles" :key="i">
+              <v-card>
+                <v-img
+                  :src="images[i]?.content"
+                  :lazy-src="file.name"
+                  contain
+                  max-height="256"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular
+                        indeterminate
+                        color="primary"
+                      ></v-progress-circular>
+                    </v-row> </template
+                ></v-img>
+                <div v-if="images[i]">
+                  <v-chip-group column>
+                    <v-chip
+                      v-for="(tag, i) in images[i].originalTags"
+                      :key="i"
+                      small
+                    >
+                      {{ tag }}
+                    </v-chip>
+                  </v-chip-group>
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="4">
+          <v-text-field
+            v-model="search"
+            label="Search Categories"
+            hide-details
+            clearable
+          ></v-text-field>
+          <v-row class="ma-1" align="center">
+            <v-chip-group column>
+              <v-chip
+                v-for="(tag, i) in selectedTags"
+                :key="i"
+                close
+                @click:close="onCloseTag(tag)"
+              >
+                {{ tag }}
+              </v-chip>
+            </v-chip-group>
+            <v-btn
+              v-if="selectedCategories.length > 0"
+              icon
+              @click="selectedCategories = []"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-row>
+          <v-treeview
+            v-model="selectedCategories"
+            :items="treeCategories"
+            :search="search"
+            open-on-click
+            selectable
+            selection-type="independent"
+          ></v-treeview>
         </v-col>
       </v-row>
-
-      <v-sheet>
-        <v-text-field
-          v-model="search"
-          label="Search Categories"
-          hide-details
-          clearable
-        ></v-text-field>
-        <v-treeview
-          v-model="selectedCategories"
-          :items="treeCategories"
-          :search="search"
-          open-on-click
-          selectable
-          selection-type="independent"
-        ></v-treeview>
-        <v-row class="ma-1">
-          <v-chip-group column>
-            <v-chip v-for="(selection, i) in selectedTags" :key="i" small>
-              {{ selection }}
-            </v-chip>
-          </v-chip-group>
-          <v-btn
-            v-if="selectedCategories.length > 0"
-            @click="selectedCategories = []"
-            icon
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-row>
-      </v-sheet>
     </v-card-text>
     <v-card-actions>
       <v-btn
-        @click="onClickTagImages"
         :disabled="imageFiles.length == 0 || selectedCategories.length == 0"
         color="primary"
+        @click="onClickTagImages"
         >Tag Images</v-btn
       >
     </v-card-actions>
@@ -83,9 +107,10 @@ import categories from "../assets/categories.yaml";
 
 @Component
 export default class ImageUpload extends Vue {
+  readonly tagSeparator = ", ";
+
   search = "";
   selectedCategories: string[] = [];
-  separator = ";";
   imageFiles: File[] = [];
   images: Image[] = [];
 
@@ -95,7 +120,7 @@ export default class ImageUpload extends Vue {
 
   get selectedTags(): string[] {
     return this.selectedCategories
-      .flatMap((categories) => categories.split(this.separator))
+      .flatMap((categories) => categories.split(this.tagSeparator))
       .filter((v, i, a) => a.indexOf(v) === i)
       .sort();
   }
@@ -109,14 +134,14 @@ export default class ImageUpload extends Vue {
         if (value === null) {
           return [
             {
-              id: id.join(this.separator),
+              id: id.join(this.tagSeparator),
               name: key,
             },
           ];
         } else {
           return [
             {
-              id: id.join(this.separator),
+              id: id.join(this.tagSeparator),
               name: key,
               children: this.parseTree(value, id),
             },
@@ -147,8 +172,14 @@ export default class ImageUpload extends Vue {
   }
 
   onClickTagImages(): void {
-    const tags = this.selectedTags.join(", ");
+    const tags = this.selectedTags.join(this.tagSeparator);
     this.images.forEach((image) => this.tagImage(image, tags));
+  }
+
+  onCloseTag(tag: string): void {
+    this.selectedCategories = this.selectedCategories.filter((category) => {
+      return !category.split(this.tagSeparator).some((t) => t === tag);
+    });
   }
 
   tagImage(image: Image, tags: string): void {
@@ -168,11 +199,39 @@ interface Item {
 }
 
 class Image {
+  static readonly attributes: string[][] = [
+    ["0th", piexif.ImageIFD.ImageDescription],
+    ["Exif", piexif.ExifIFD.UserComment],
+  ];
+
   public name: string;
   public type: string;
+  private originalTagsSet: Set<string>;
+
+  private exif: Record<string, Record<string, string>>;
+
   constructor(file: File, public content: string) {
     this.name = file.name;
     this.type = file.type;
+    this.exif = piexif.load(content);
+    this.originalTagsSet = Image.getTags(this.exif);
+  }
+
+  static getTags(exif: Record<string, Record<string, string>>): Set<string> {
+    return new Set(
+      Image.attributes
+        .map((attribute) => exif[attribute[0]][attribute[1]])
+        .filter((tags) => tags !== undefined)
+        .map((tags) => tags.replace(/ASCII|[^\x20-\x7E]/g, ""))
+        .flatMap((tags) => tags.split(","))
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0)
+        .map((tag) => tag.toLowerCase())
+    );
+  }
+
+  get originalTags(): string[] {
+    return Array.from(this.originalTagsSet).sort();
   }
 }
 </script>
