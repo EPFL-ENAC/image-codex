@@ -74,4 +74,18 @@ export default class Image {
     const bytes = piexif.dump(this.exif);
     return piexif.insert(bytes, this.content);
   }
+
+  private getExifObject(): Record<string, Record<string, unknown>> {
+    const result: Record<string, Record<string, unknown>> = {};
+    for (const ifd in this.exif) {
+      if (ifd !== "thumbnail") {
+        const tags: Record<string, unknown> = {};
+        for (const tag in this.exif[ifd]) {
+          tags[piexif.TAGS[ifd][tag]["name"]] = this.exif[ifd][tag];
+        }
+        result[ifd] = tags;
+      }
+    }
+    return result;
+  }
 }
