@@ -29,9 +29,11 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Deploy
+[Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 ```
 # Install
-ansible-galaxy collection install community.docker
+ansible-galaxy install -r ansible/requirements.yml
+ansible-playbook ansible/install.yml -i ansible/inventory.ini
 
 # Deploy
 ansible-playbook ansible/deploy.yml -i ansible/inventory.ini
