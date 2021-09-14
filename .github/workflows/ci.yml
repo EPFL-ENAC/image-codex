@@ -21,3 +21,21 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run build
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Ansible
+        run: |
+          sudo apt install software-properties-common
+          sudo add-apt-repository --yes --update ppa:ansible/ansible
+          sudo apt install ansible
+      - name: Run Ansible playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ansible/deploy.yml
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          requirements: ansible/requirements.yml
+          options: |
+            -i ansible/inventory.ini
+            --verbose
