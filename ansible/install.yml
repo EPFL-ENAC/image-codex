@@ -1,5 +1,5 @@
 ---
-- name: Image Codex
+- name: Image Codex - Install
   hosts: image-codex
   remote_user: root
 
@@ -40,12 +40,3 @@
       openssh_keypair:
         path: ~/.ssh/id_ed25519
         type: ed25519
-    - name: Git checkout
-      git:
-        repo: git@github.com:EPFL-ENAC/image-codex.git
-        dest: /opt/image-codex
-        accept_hostkey: yes
-    - name: Run Docker Compose
-      community.docker.docker_compose:
-        project_src: /opt/image-codex
-        build: yes
