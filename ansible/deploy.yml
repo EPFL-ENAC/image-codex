@@ -1,0 +1,21 @@
+---
+- name: Image Codex - Deploy
+  hosts: image-codex
+  remote_user: root
+
+  tasks:
+    - name: Upgrade packages
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        upgrade: "yes"
+    - name: Git checkout
+      git:
+        repo: git@github.com:EPFL-ENAC/image-codex.git
+        dest: /opt/image-codex
+        accept_hostkey: yes
+        version: main
+    - name: Run Docker Compose
+      community.docker.docker_compose:
+        project_src: /opt/image-codex
+        build: yes
