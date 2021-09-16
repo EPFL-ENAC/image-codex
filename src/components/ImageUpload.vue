@@ -55,24 +55,21 @@
                 </v-select>
               </v-row>
               <v-row>
+                <v-combobox
+                  v-model="selectedTags"
+                  label="Tags"
+                  chips
+                  deletable-chips
+                  multiple
+                ></v-combobox>
+              </v-row>
+              <v-row>
                 <v-text-field
                   v-model="search"
                   label="Search Categories"
                   hide-details
                   clearable
                 ></v-text-field>
-              </v-row>
-              <v-row>
-                <v-chip-group column>
-                  <v-chip
-                    v-for="(tag, i) in selectedTags"
-                    :key="i"
-                    close
-                    @click:close="onCloseTag(tag)"
-                  >
-                    {{ tag }}
-                  </v-chip>
-                </v-chip-group>
               </v-row>
               <v-row>
                 <v-treeview
@@ -145,6 +142,7 @@ export default class ImageUpload extends Vue {
   license = "";
   search = "";
   selectedCategories: string[] = [];
+  customTags: string[] = [];
   imageFiles: File[] = [];
   images: Image[] = [];
 
@@ -156,36 +154,79 @@ export default class ImageUpload extends Vue {
     return this.selectedCategories
       .flatMap((categories) => categories.split(tagSeparator))
       .filter((v, i, a) => a.indexOf(v) === i)
+      .concat(this.customTags)
       .sort();
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-  parseTree(obj: any, parents: string[] = []): Item[] {
-    return Object.entries(obj).flatMap(([key, value]) => {
-      const id = [...parents, key];
-      const type = typeof value;
-      if (type === "object") {
-        if (value === null) {
-          return [
-            {
-              id: id.join(tagSeparator),
-              name: key,
-            },
-          ];
-        } else {
-          return [
-            {
-              id: id.join(tagSeparator),
-              name: key,
-              children: this.parseTree(value, id),
-            },
-          ];
-        }
-      } else {
-        console.error(`unexpected type ${type} for key ${id.join(".")}`);
-        return [];
-      }
+  set selectedTags(values: string[]) {
+    const tags = new Set(values);
+    this.selectedCategories = this.selectedCategories.filter((category) =>
+      category.split(tagSeparator).every((tag) => tags.has(tag))
+    );
+    const categories = new Set(
+      this.selectedCategories.flatMap((categories) =>
+        categories.split(tagSeparator)
+      )
+    );
+    this.customTags = values.filter((value) => !categories.has(value));
+  }
+
+  get treeArray(): unknown[] {
+    return this.parseTreeArray(categories).map((item) => {
+      return {
+        text: item[item.length - 1],
+        value: item,
+      };
     });
+  }
+
+  parseTree(obj: unknown, parents: string[] = []): Item[] {
+    return Object.entries(obj as Record<string, unknown>).flatMap(
+      ([key, value]) => {
+        const id = [...parents, key];
+        const type = typeof value;
+        if (type === "object") {
+          if (value === null) {
+            return [
+              {
+                id: id.join(tagSeparator),
+                name: key,
+              },
+            ];
+          } else {
+            return [
+              {
+                id: id.join(tagSeparator),
+                name: key,
+                children: this.parseTree(value, id),
+              },
+            ];
+          }
+        } else {
+          console.error(`unexpected type ${type} for key ${id.join(".")}`);
+          return [];
+        }
+      }
+    );
+  }
+
+  parseTreeArray(obj: unknown, parents: string[] = []): string[][] {
+    return Object.entries(obj as Record<string, unknown>).flatMap(
+      ([key, value]) => {
+        const id = [...parents, key];
+        const type = typeof value;
+        if (type === "object") {
+          if (value === null) {
+            return [id];
+          } else {
+            return this.parseTreeArray(value, id);
+          }
+        } else {
+          console.error(`unexpected type ${type} for key ${id.join(".")}`);
+          return [];
+        }
+      }
+    );
   }
 
   mapFileToBase64(blob: Blob): Promise<string> {
@@ -209,12 +250,6 @@ export default class ImageUpload extends Vue {
     this.images.forEach((image) => {
       const content = image.write();
       download(content, image.name, image.type);
-    });
-  }
-
-  onCloseTag(tag: string): void {
-    this.selectedCategories = this.selectedCategories.filter((category) => {
-      return !category.split(tagSeparator).some((t) => t === tag);
     });
   }
 
