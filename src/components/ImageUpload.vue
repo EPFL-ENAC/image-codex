@@ -1,6 +1,6 @@
 <template>
   <v-card flat>
-    <v-card-title>Image Tagging</v-card-title>
+    <v-card-title>Image Metadata Editor</v-card-title>
     <v-card-text>
       <v-row>
         <v-col cols="12" sm="8">
@@ -26,48 +26,77 @@
         </v-col>
         <v-col cols="12" sm="4">
           <v-sheet class="ma-1">
-            <v-row>
-              <v-text-field
-                v-model="search"
-                label="Search Categories"
-                hide-details
-                clearable
-              ></v-text-field>
-            </v-row>
-            <v-row>
-              <v-chip-group column>
-                <v-chip
-                  v-for="(tag, i) in selectedTags"
-                  :key="i"
-                  close
-                  @click:close="onCloseTag(tag)"
+            <v-form v-model="formValid">
+              <v-row>
+                <v-text-field
+                  v-model="author"
+                  label="Author"
+                  :rules="[rules.required]"
+                  required
+                ></v-text-field>
+              </v-row>
+              <v-row>
+                <v-select
+                  v-model="license"
+                  :items="licenses"
+                  :rules="[rules.required]"
+                  label="License"
+                  required
                 >
-                  {{ tag }}
-                </v-chip>
-              </v-chip-group>
-            </v-row>
-            <v-row>
-              <v-treeview
-                v-model="selectedCategories"
-                :items="treeCategories"
-                :search="search"
-                hoverable
-                open-on-click
-                selectable
-                selected-color="primary"
-                selection-type="independent"
-              ></v-treeview>
-            </v-row>
-            <v-row>
-              <v-btn
-                color="primary"
-                :disabled="selectedCategories.length == 0 || images.length == 0"
-                @click="onClickAddTags"
-              >
-                Add to images
-                <v-icon right>mdi-plus-circle</v-icon>
-              </v-btn>
-            </v-row>
+                  <template v-slot:append-outer>
+                    <v-btn
+                      icon
+                      href="https://creativecommons.org/choose/"
+                      target="_blank"
+                    >
+                      <v-icon>mdi-information</v-icon>
+                    </v-btn>
+                  </template>
+                </v-select>
+              </v-row>
+              <v-row>
+                <v-text-field
+                  v-model="search"
+                  label="Search Categories"
+                  hide-details
+                  clearable
+                ></v-text-field>
+              </v-row>
+              <v-row>
+                <v-chip-group column>
+                  <v-chip
+                    v-for="(tag, i) in selectedTags"
+                    :key="i"
+                    close
+                    @click:close="onCloseTag(tag)"
+                  >
+                    {{ tag }}
+                  </v-chip>
+                </v-chip-group>
+              </v-row>
+              <v-row>
+                <v-treeview
+                  v-model="selectedCategories"
+                  :items="treeCategories"
+                  :search="search"
+                  hoverable
+                  open-on-click
+                  selectable
+                  selected-color="primary"
+                  selection-type="independent"
+                ></v-treeview>
+              </v-row>
+              <v-row>
+                <v-btn
+                  color="primary"
+                  :disabled="!formValid || images.length == 0"
+                  @click="onClickAddToImage"
+                >
+                  <v-icon left>mdi-plus-circle</v-icon>
+                  Add to images
+                </v-btn>
+              </v-row>
+            </v-form>
           </v-sheet>
         </v-col>
       </v-row>
@@ -77,8 +106,10 @@
         :disabled="imageFiles.length == 0"
         color="primary"
         @click="onClickTagImages"
-        >Tag Images</v-btn
       >
+        <v-icon left>mdi-download</v-icon>
+        Download Images
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -90,6 +121,8 @@ import download from "downloadjs";
 import categories from "../assets/categories.yaml";
 import ImageItem from "./ImageItem.vue";
 import Image from "@/models/image";
+import rules from "@/utils/rules";
+import { tagSeparator } from "@/utils/contants";
 
 @Component({
   components: {
@@ -97,8 +130,19 @@ import Image from "@/models/image";
   },
 })
 export default class ImageUpload extends Vue {
-  readonly tagSeparator = ", ";
+  readonly rules = rules;
+  readonly licenses = [
+    "Creative Commons Attribution 4.0 International License",
+    "Creative Commons Attribution-ShareAlike 4.0 International License",
+    "Creative Commons Attribution-NoDerivs 4.0 International License",
+    "Creative Commons Attribution-NonCommercial 4.0 International License",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License",
+    "Creative Commons Attribution-NonCommercial-NoDerivs 4.0 International License",
+  ];
 
+  formValid = false;
+  author = "";
+  license = "";
   search = "";
   selectedCategories: string[] = [];
   imageFiles: File[] = [];
@@ -110,7 +154,7 @@ export default class ImageUpload extends Vue {
 
   get selectedTags(): string[] {
     return this.selectedCategories
-      .flatMap((categories) => categories.split(this.tagSeparator))
+      .flatMap((categories) => categories.split(tagSeparator))
       .filter((v, i, a) => a.indexOf(v) === i)
       .sort();
   }
@@ -124,14 +168,14 @@ export default class ImageUpload extends Vue {
         if (value === null) {
           return [
             {
-              id: id.join(this.tagSeparator),
+              id: id.join(tagSeparator),
               name: key,
             },
           ];
         } else {
           return [
             {
-              id: id.join(this.tagSeparator),
+              id: id.join(tagSeparator),
               name: key,
               children: this.parseTree(value, id),
             },
@@ -163,20 +207,22 @@ export default class ImageUpload extends Vue {
 
   onClickTagImages(): void {
     this.images.forEach((image) => {
-      const content = image.tag(this.tagSeparator);
+      const content = image.write();
       download(content, image.name, image.type);
     });
   }
 
   onCloseTag(tag: string): void {
     this.selectedCategories = this.selectedCategories.filter((category) => {
-      return !category.split(this.tagSeparator).some((t) => t === tag);
+      return !category.split(tagSeparator).some((t) => t === tag);
     });
   }
 
-  onClickAddTags(): void {
+  onClickAddToImage(): void {
     const tags = this.selectedTags;
     this.images.forEach((image) => {
+      image.newAuthor = this.author;
+      image.newCopyright = this.license;
       image.addTags(tags);
     });
     const imageItems: Vue[] = this.$refs.imageItems as Vue[];

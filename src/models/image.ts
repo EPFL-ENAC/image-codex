@@ -1,14 +1,25 @@
 import piexif from "piexifjs";
+import { tagSeparator } from "@/utils/contants";
 
 export default class Image {
-  static readonly attributes: string[][] = [
+  static readonly tagsAttributes: string[][] = [
     ["0th", piexif.ImageIFD.ImageDescription],
     ["Exif", piexif.ExifIFD.UserComment],
+  ];
+  static readonly authorAttribute: string[] = ["0th", piexif.ImageIFD.Artist];
+  static readonly copyrightAttribute: string[] = [
+    "0th",
+    piexif.ImageIFD.Copyright,
   ];
 
   public name: string | undefined;
   public type: string | undefined;
-  private exif: Record<string, Record<string, string>>;
+  public oldAuthor: string | undefined;
+  public newAuthor: string | undefined;
+  public oldCopyright: string | undefined;
+  public newCopyright: string | undefined;
+
+  private exif: Record<string, Record<string, string | undefined>>;
   private oldTags: Set<string>;
   private newTags: Set<string>;
 
@@ -16,18 +27,28 @@ export default class Image {
     this.name = file?.name;
     this.type = file?.type;
     this.exif = content ? piexif.load(content) : {};
-    this.oldTags = Image.getTags(this.exif);
+    this.oldTags = this.getTags();
     this.newTags = new Set(this.oldTags);
+    this.oldAuthor = this.getAttributeValue(Image.authorAttribute);
+    this.newAuthor = this.oldAuthor;
+    this.oldCopyright = this.getAttributeValue(Image.copyrightAttribute);
+    this.newCopyright = this.oldCopyright;
   }
 
-  static getTags(exif: Record<string, Record<string, string>>): Set<string> {
+  private getAttributeValue(key: string[]): string | undefined {
+    const group = this.exif[key[0]];
+    return group ? group[key[1]] : undefined;
+  }
+
+  private setAttributeValue(key: string[], value: string | undefined): void {
+    this.exif[key[0]][key[1]] = value;
+  }
+
+  private getTags(): Set<string> {
     return new Set(
-      Image.attributes
-        .flatMap((attribute) => {
-          const group = exif[attribute[0]];
-          return group ? [group[attribute[1]]] : [];
-        })
-        .filter((tags) => tags !== undefined)
+      Image.tagsAttributes
+        .map((attribute) => this.getAttributeValue(attribute))
+        .filter((tags): tags is string => tags !== undefined)
         .map((tags) => tags.replace(/ASCII|[^\x20-\x7E]/g, ""))
         .flatMap((tags) => tags.split(","))
         .map((tag) => tag.trim())
@@ -54,6 +75,14 @@ export default class Image {
     ).sort();
   }
 
+  get authorChanged(): boolean {
+    return this.oldAuthor !== this.newAuthor;
+  }
+
+  get copyrightChanged(): boolean {
+    return this.oldCopyright !== this.newCopyright;
+  }
+
   public addTag(tag: string): void {
     this.newTags.add(tag);
   }
@@ -66,16 +95,18 @@ export default class Image {
     this.newTags.delete(tag);
   }
 
-  public tag(separator: string): string {
-    const tags: string = Array.from(this.newTags).sort().join(separator);
-    Image.attributes.forEach((attribute) => {
-      this.exif[attribute[0]][attribute[1]] = tags;
+  public write(): string {
+    this.setAttributeValue(Image.authorAttribute, this.newAuthor);
+    this.setAttributeValue(Image.copyrightAttribute, this.newCopyright);
+    const tags: string = Array.from(this.newTags).sort().join(tagSeparator);
+    Image.tagsAttributes.forEach((attribute) => {
+      this.setAttributeValue(attribute, tags);
     });
     const bytes = piexif.dump(this.exif);
     return piexif.insert(bytes, this.content);
   }
 
-  private getExifObject(): Record<string, Record<string, unknown>> {
+  get metadata(): Record<string, Record<string, unknown>> {
     const result: Record<string, Record<string, unknown>> = {};
     for (const ifd in this.exif) {
       if (ifd !== "thumbnail") {
