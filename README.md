@@ -3,6 +3,7 @@
 ## Run
 ```bash
 make run-frontend
+make run-backend
 ```
 
 ## Deploy
