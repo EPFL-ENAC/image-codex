@@ -1,36 +1,20 @@
-# image-codex
+# Image Codex
 
-## Project setup
+## Run
+```bash
+make run-frontend
 ```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Deploy
-[Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+
+### Locally
+```bash
+docker-compose up --build --remove-orphans
 ```
+
+### Server
+[Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+```bash
 # Install
 ansible-galaxy install -r ansible/requirements.yml
 ansible-playbook ansible/install.yml -i ansible/inventory.ini

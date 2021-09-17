@@ -19,3 +19,4 @@
       community.docker.docker_compose:
         project_src: /opt/image-codex
         build: yes
+        remove_orphans: yes

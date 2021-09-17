@@ -1,6 +1,6 @@
 services:
-  web:
-    build: .
+  frontend:
+    build: ./frontend
     ports:
       - "80:80"
     restart: unless-stopped
