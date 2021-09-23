@@ -83,6 +83,10 @@ export default class Image {
     return this.oldCopyright !== this.newCopyright;
   }
 
+  get isValid(): boolean {
+    return this.newTags.size > 0 && !!this.newAuthor && !!this.newCopyright;
+  }
+
   public addTag(tag: string): void {
     this.newTags.add(tag);
   }

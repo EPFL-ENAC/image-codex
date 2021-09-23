@@ -15,6 +15,10 @@
         dest: /opt/image-codex
         accept_hostkey: yes
         version: main
+    - name: Copy secrets
+      ansible.builtin.copy:
+        src: ../secrets
+        dest: /opt/image-codex
     - name: Run Docker Compose
       community.docker.docker_compose:
         project_src: /opt/image-codex

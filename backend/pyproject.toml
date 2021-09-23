@@ -8,9 +8,12 @@ authors = ["David Tang <david.tang@epfl.ch>"]
 python = "^3.9"
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
+cloudinary = "^1.26.0"
+Pillow = "^8.3.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+python-dotenv = "^0.19.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

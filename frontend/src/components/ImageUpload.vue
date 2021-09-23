@@ -101,9 +101,18 @@
     </v-card-text>
     <v-card-actions>
       <v-btn
-        :disabled="imageFiles.length == 0"
+        :disabled="!isValidImages"
+        :loading="imagesUploading"
         color="primary"
-        @click="onClickTagImages"
+        @click="onUploadImages"
+      >
+        <v-icon left>mdi-cloud-upload</v-icon>
+        Upload Images
+      </v-btn>
+      <v-btn
+        :disabled="!isValidImages"
+        color="primary"
+        @click="onDownloadImages"
       >
         <v-icon left>mdi-download</v-icon>
         Download Images
@@ -115,6 +124,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import axios from "axios";
 import download from "downloadjs";
 import categories from "../assets/categories.yaml";
 import ImageItem from "./ImageItem.vue";
@@ -141,6 +151,7 @@ export default class ImageUpload extends Vue {
   customTags: string[] = [];
   imageFiles: File[] = [];
   images: Image[] = [];
+  imagesUploading = false;
 
   get treeCategories(): Item[] {
     return this.parseTree(categories);
@@ -174,6 +185,12 @@ export default class ImageUpload extends Vue {
         value: item,
       };
     });
+  }
+
+  get isValidImages(): boolean {
+    return (
+      this.images.length > 0 && this.images.every((image) => image.isValid)
+    );
   }
 
   parseTree(obj: unknown, parents: string[] = []): Item[] {
@@ -246,10 +263,21 @@ export default class ImageUpload extends Vue {
     localStorage.setItem(LocalStorageKey.Author, this.author);
   }
 
-  onClickTagImages(): void {
+  onDownloadImages(): void {
     this.images.forEach((image) => {
       const content = image.write();
       download(content, image.name, image.type);
+    });
+  }
+
+  onUploadImages(): void {
+    this.imagesUploading = true;
+    Promise.all(
+      this.images.map((image) =>
+        this.$http.post("/images", { content: image.content?.split(",")[1] })
+      )
+    ).then(() => {
+      this.imagesUploading = false;
     });
   }
 

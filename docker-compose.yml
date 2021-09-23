@@ -15,8 +15,11 @@ services:
     restart: unless-stopped
   backend:
     build: ./backend
+    env_file: secrets/backend.env
     environment:
+      MODULE_NAME: image_codex.main
       ROOT_PATH: /api
+      CORS_ENABLED: 'true'
     labels:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend.middlewares=backend-stripprefix"

@@ -1,6 +1,10 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-alpine3.14
 
-RUN apk --no-cache add curl
+RUN apk --no-cache add \
+    build-base \
+    curl \
+    jpeg-dev \
+    zlib-dev
 
 # Install Poetry
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
@@ -13,4 +17,4 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
 
-COPY ./image_codex /app
+COPY ./image_codex /app/image_codex
