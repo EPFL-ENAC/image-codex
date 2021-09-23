@@ -33,6 +33,7 @@
                   label="Author"
                   :rules="[rules.required]"
                   required
+                  @change="onChangeAuthor"
                 ></v-text-field>
               </v-row>
               <v-row>
@@ -119,7 +120,7 @@ import categories from "../assets/categories.yaml";
 import ImageItem from "./ImageItem.vue";
 import Image from "@/models/image";
 import rules from "@/utils/rules";
-import { tagSeparator } from "@/utils/contants";
+import { LocalStorageKey, tagSeparator } from "@/utils/contants";
 
 @Component({
   components: {
@@ -138,7 +139,7 @@ export default class ImageUpload extends Vue {
   ];
 
   formValid = false;
-  author = "";
+  author = localStorage.getItem(LocalStorageKey.Author) ?? "";
   license = "";
   search = "";
   selectedCategories: string[] = [];
@@ -244,6 +245,10 @@ export default class ImageUpload extends Vue {
         (content, i) => new Image(files[i], content)
       ));
     });
+  }
+
+  onChangeAuthor(): void {
+    localStorage.setItem(LocalStorageKey.Author, this.author);
   }
 
   onClickTagImages(): void {
