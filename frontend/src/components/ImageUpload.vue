@@ -131,16 +131,11 @@ export default class ImageUpload extends Vue {
   readonly rules = rules;
   readonly licenses = [
     "Creative Commons Attribution 4.0 International License",
-    "Creative Commons Attribution-ShareAlike 4.0 International License",
-    "Creative Commons Attribution-NoDerivs 4.0 International License",
-    "Creative Commons Attribution-NonCommercial 4.0 International License",
-    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License",
-    "Creative Commons Attribution-NonCommercial-NoDerivs 4.0 International License",
   ];
 
   formValid = false;
   author = localStorage.getItem(LocalStorageKey.Author) ?? "";
-  license = "";
+  license = this.licenses[0];
   search = "";
   selectedCategories: string[] = [];
   customTags: string[] = [];
