@@ -10,6 +10,7 @@ fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
 cloudinary = "^1.26.0"
 Pillow = "^8.3.2"
+fastapi-pagination = "^0.9.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

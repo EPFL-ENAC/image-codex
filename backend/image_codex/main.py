@@ -4,6 +4,7 @@ import os
 import cloudinary
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination.api import add_pagination
 
 from image_codex.routers import images, root
 
@@ -17,7 +18,7 @@ class EnvInterpolation(configparser.BasicInterpolation):
 config = configparser.ConfigParser(interpolation=EnvInterpolation())
 config.read('image_codex/config.ini')
 
-
+# fast_api
 fast_api_config = config['fast_api']
 
 app = FastAPI(root_path=fast_api_config.get('root_path', ''))
@@ -35,7 +36,9 @@ else:
 app.include_router(root.router)
 app.include_router(images.router)
 
+add_pagination(app)
 
+# cloudinary
 cloudinary_config = config['cloudinary']
 
 cloudinary.config(

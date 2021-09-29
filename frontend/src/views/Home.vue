@@ -1,18 +1,13 @@
 <template>
   <v-container>
-    <image-upload />
+    Image Codex
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import ImageUpload from "../components/ImageUpload.vue";
+import Component from "vue-class-component";
 
-export default Vue.extend({
-  name: "Home",
-
-  components: {
-    ImageUpload,
-  },
-});
+@Component
+export default class Home extends Vue {}
 </script>

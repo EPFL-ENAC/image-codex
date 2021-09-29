@@ -124,13 +124,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import axios from "axios";
 import download from "downloadjs";
-import categories from "../assets/categories.yaml";
+import categories from "@/assets/categories.yaml";
 import ImageItem from "./ImageItem.vue";
 import Image from "@/models/image";
 import rules from "@/utils/rules";
 import { LocalStorageKey, tagSeparator } from "@/utils/contants";
+import { unique } from "@/utils/functions";
 
 @Component({
   components: {
@@ -160,7 +160,7 @@ export default class ImageUpload extends Vue {
   get selectedTags(): string[] {
     return this.selectedCategories
       .flatMap((categories) => categories.split(tagSeparator))
-      .filter((v, i, a) => a.indexOf(v) === i)
+      .filter(unique)
       .concat(this.customTags)
       .sort();
   }
@@ -273,9 +273,13 @@ export default class ImageUpload extends Vue {
   onUploadImages(): void {
     this.imagesUploading = true;
     Promise.all(
-      this.images.map((image) =>
-        this.$http.post("/images", { content: image.content?.split(",")[1] })
-      )
+      this.images.map((image) => {
+        const content = image.write();
+        const data = content.startsWith("data:")
+          ? content?.split(",")[1]
+          : content;
+        return this.$http.post("/images", { content: data });
+      })
     ).then(() => {
       this.imagesUploading = false;
     });
