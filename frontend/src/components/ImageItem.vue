@@ -105,7 +105,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Image from "@/models/image";
+import Image from "@/models/upload-image";
 import rules from "@/utils/rules";
 
 const ImageItemProps = Vue.extend({

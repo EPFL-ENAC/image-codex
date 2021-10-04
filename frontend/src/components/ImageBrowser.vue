@@ -25,6 +25,11 @@
                 {{ tag }}
               </v-chip>
             </v-chip-group>
+            <v-card-actions>
+              <v-btn color="primary" icon @click="$emit('add', item)">
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
         <v-col v-if="next">
@@ -45,11 +50,12 @@ import Component from "vue-class-component";
 import categories from "@/assets/categories.yaml";
 import CursorPage from "@/models/cursorPage";
 import { paramsSerializer, unique } from "@/utils/functions";
+import BackendImage from "@/models/backend-image";
 
 @Component
 export default class ImageBrowser extends Vue {
   selectedTags: string[] = [];
-  images: LinkImage[] = [];
+  images: BackendImage[] = [];
   readonly pageSize = 4;
   next: string | undefined = undefined;
   imagesCount = 0;
@@ -88,9 +94,9 @@ export default class ImageBrowser extends Vue {
     );
   }
 
-  private updateItems(callback: (images: LinkImage[]) => void) {
+  private updateItems(callback: (images: BackendImage[]) => void) {
     this.$http
-      .get<CursorPage<LinkImage>>("/images", {
+      .get<CursorPage<BackendImage>>("/images", {
         params: {
           size: this.pageSize,
           next: this.next,
@@ -114,13 +120,5 @@ export default class ImageBrowser extends Vue {
   getNextImages(): void {
     this.updateItems((images) => this.images.push(...images));
   }
-}
-
-interface LinkImage {
-  id: string;
-  name: string;
-  url: string;
-  author: string;
-  license: string;
 }
 </script>

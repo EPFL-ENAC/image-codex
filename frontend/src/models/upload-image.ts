@@ -1,7 +1,7 @@
 import piexif from "piexifjs";
 import { tagSeparator } from "@/utils/contants";
 
-export default class Image {
+export default class UploadImage {
   static readonly tagsAttributes: string[][] = [
     ["0th", piexif.ImageIFD.ImageDescription],
     ["Exif", piexif.ExifIFD.UserComment],
@@ -29,9 +29,9 @@ export default class Image {
     this.exif = content ? piexif.load(content) : {};
     this.oldTags = this.getTags();
     this.newTags = new Set(this.oldTags);
-    this.oldAuthor = this.getAttributeValue(Image.authorAttribute);
+    this.oldAuthor = this.getAttributeValue(UploadImage.authorAttribute);
     this.newAuthor = this.oldAuthor;
-    this.oldCopyright = this.getAttributeValue(Image.copyrightAttribute);
+    this.oldCopyright = this.getAttributeValue(UploadImage.copyrightAttribute);
     this.newCopyright = this.oldCopyright;
   }
 
@@ -46,7 +46,7 @@ export default class Image {
 
   private getTags(): Set<string> {
     return new Set(
-      Image.tagsAttributes
+      UploadImage.tagsAttributes
         .map((attribute) => this.getAttributeValue(attribute))
         .filter((tags): tags is string => tags !== undefined)
         .map((tags) => tags.replace(/ASCII|[^\x20-\x7E]/g, ""))
@@ -100,10 +100,10 @@ export default class Image {
   }
 
   public write(): string {
-    this.setAttributeValue(Image.authorAttribute, this.newAuthor);
-    this.setAttributeValue(Image.copyrightAttribute, this.newCopyright);
+    this.setAttributeValue(UploadImage.authorAttribute, this.newAuthor);
+    this.setAttributeValue(UploadImage.copyrightAttribute, this.newCopyright);
     const tags: string = Array.from(this.newTags).sort().join(tagSeparator);
-    Image.tagsAttributes.forEach((attribute) => {
+    UploadImage.tagsAttributes.forEach((attribute) => {
       this.setAttributeValue(attribute, tags);
     });
     const bytes = piexif.dump(this.exif);

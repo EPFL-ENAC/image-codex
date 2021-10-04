@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    Image Codex
+    <div>
+      <h1>Image Codex</h1>
+    </div>
   </v-container>
 </template>
 

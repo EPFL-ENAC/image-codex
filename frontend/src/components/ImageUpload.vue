@@ -127,7 +127,7 @@ import Component from "vue-class-component";
 import download from "downloadjs";
 import categories from "@/assets/categories.yaml";
 import ImageItem from "./ImageItem.vue";
-import Image from "@/models/image";
+import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import { LocalStorageKey, tagSeparator } from "@/utils/contants";
 import { unique } from "@/utils/functions";
@@ -150,7 +150,7 @@ export default class ImageUpload extends Vue {
   selectedCategories: string[] = [];
   customTags: string[] = [];
   imageFiles: File[] = [];
-  images: Image[] = [];
+  images: UploadImage[] = [];
   imagesUploading = false;
 
   get treeCategories(): Item[] {
@@ -254,7 +254,7 @@ export default class ImageUpload extends Vue {
     const files = this.imageFiles;
     Promise.all(files.map(this.mapFileToBase64)).then((contents) => {
       return (this.images = contents.map(
-        (content, i) => new Image(files[i], content)
+        (content, i) => new UploadImage(files[i], content)
       ));
     });
   }
