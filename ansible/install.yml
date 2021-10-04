@@ -1,6 +1,6 @@
 ---
 - name: Image Codex - Install
-  hosts: image-codex
+  hosts: image_codex
   remote_user: root
 
   tasks:

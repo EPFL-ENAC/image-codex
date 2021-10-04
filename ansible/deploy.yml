@@ -1,6 +1,6 @@
 ---
 - name: Image Codex - Deploy
-  hosts: image-codex
+  hosts: image_codex
   remote_user: root
 
   tasks:
@@ -24,3 +24,9 @@
         project_src: /opt/image-codex
         build: yes
         remove_orphans: yes
+    - name: Docker Prune
+      community.docker.docker_prune:
+        containers: yes
+        images: yes
+        networks: yes
+        volumes: yes
