@@ -19,7 +19,8 @@ services:
     environment:
       MODULE_NAME: image_codex.main
       ROOT_PATH: /api
-      CORS_ENABLED: 'true'
+      CORS_ENABLED: "true"
+      CLOUDINARY_FOLDER: image-codex-prod
     labels:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend.middlewares=backend-stripprefix"

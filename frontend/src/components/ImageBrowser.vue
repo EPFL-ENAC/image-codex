@@ -12,6 +12,9 @@
         @change="initializeImages"
       ></v-combobox>
       <v-row>
+        <v-col v-if="images.length === 0">
+          <span>No images</span>
+        </v-col>
         <v-col v-for="item in images" :key="item.id" cols="12" sm="12" md="6">
           <v-card>
             <v-img :src="item.url"></v-img>

@@ -1,4 +1,5 @@
 import base64
+import os
 from io import BytesIO
 from typing import Any, List
 
@@ -14,7 +15,7 @@ from pydantic import BaseModel
 
 router = APIRouter()
 root_path = '/images'
-root_folder = 'image-codex'
+root_folder = os.getenv('CLOUDINARY_FOLDER', 'image-codex')
 
 
 class RequestImage(BaseModel):
