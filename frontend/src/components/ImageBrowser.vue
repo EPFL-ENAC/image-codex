@@ -11,7 +11,12 @@
         multiple
         @change="initializeImages"
       ></v-combobox>
-      <v-text-field v-model="author" label="Author" clearable @change="initializeImages"></v-text-field>
+      <v-text-field
+        v-model="author"
+        label="Author"
+        clearable
+        @change="initializeImages"
+      ></v-text-field>
       <v-row>
         <v-col v-if="images.length === 0">
           <span>No images</span>
