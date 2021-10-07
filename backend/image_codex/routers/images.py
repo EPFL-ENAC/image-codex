@@ -1,7 +1,7 @@
 import base64
 import os
 from io import BytesIO
-from typing import Any, List
+from typing import Any, List, Optional
 
 import cloudinary
 import cloudinary.uploader
@@ -68,12 +68,16 @@ def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:
 @router.get(root_path, response_model=CursorPage[ResponseImage])
 async def get_images(params: CursorParams = Depends(),
                      tags: List[str] = Query([]),
+                     author: Optional[str] = Query(None),
                      ) -> AbstractPage[ResponseImage]:
-    folder_expressions = ['folder=' + root_folder]
-    tag_expressions = ['tags=' + tag for tag in tags]
-    expressions = folder_expressions + tag_expressions
+    folder_expressions = [f'folder="{root_folder}"']
+    tag_expressions = [f'tags="{tag}"' for tag in tags]
+    author_expressions = [f'context.Artist="{author}"'] if author else []
+    expressions = folder_expressions + tag_expressions + author_expressions
+    expression = ' AND '.join(expressions)
+    print(expression)
     response = cloudinary.Search()\
-        .expression(' AND '.join(expressions))\
+        .expression(expression)\
         .max_results(params.size)\
         .next_cursor(params.next)\
         .with_field('context')\

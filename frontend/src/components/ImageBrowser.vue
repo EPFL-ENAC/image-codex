@@ -11,6 +11,7 @@
         multiple
         @change="initializeImages"
       ></v-combobox>
+      <v-text-field v-model="author" label="Author" clearable @change="initializeImages"></v-text-field>
       <v-row>
         <v-col v-if="images.length === 0">
           <span>No images</span>
@@ -54,6 +55,7 @@ import categories from "@/assets/categories.yaml";
 import CursorPage from "@/models/cursorPage";
 import { paramsSerializer, unique } from "@/utils/functions";
 import BackendImage from "@/models/backend-image";
+import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class ImageBrowser extends Vue {
@@ -62,6 +64,7 @@ export default class ImageBrowser extends Vue {
   readonly pageSize = 4;
   next: string | undefined = undefined;
   imagesCount = 0;
+  author = localStorage.getItem(LocalStorageKey.Author);
 
   get tags(): string[] {
     return this.getItems(categories).filter(unique).sort();
@@ -104,6 +107,7 @@ export default class ImageBrowser extends Vue {
           size: this.pageSize,
           next: this.next,
           tags: this.selectedTags,
+          author: this.author ? this.author : undefined,
         },
         paramsSerializer: paramsSerializer,
       })
