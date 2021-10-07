@@ -1,103 +1,224 @@
 building material:
-  as found:
-    soil:
-      clay:
-      lime:
-      sand:
-    stone:
-      granit:
-      limestone:
-      marble:
-      sandstone:
-      travertine:
-    thatch:
-      reed:
-      bamboo:
-    wood:
-      oak:
-      pine:
-      spruce:
-      larch:
-      fir:
-  transformed:
-    brick:
-    concrete:
-    foam:
-    glass:
-    metal:
-      aluminium:
-      bronze:
-      cast iron:
-      copper:
-      iron:
-      stainless steel:
-      zinc:
-    plastic:
-    ceramics:
-    wood-based:
+  de: baumaterial
+  children:
+    as found:
+      de: gefunden
+      children:
+        soil:
+          de: erde
+          children:
+            clay:
+              de: lehm
+            lime:
+              de: kalk
+            sand:
+              de: sand
+        stone:
+          de: stein
+          children:
+            granit:
+              de: granit
+            limestone:
+              de: limestone
+            marble:
+              de: marmor
+            sandstone:
+              de: sandstein
+            travertine:
+              de: travertin
+        thatch:
+          de: gras
+          children:
+            reed:
+              de: schilf
+            bamboo:
+              de: bambus
+        wood:
+          de: holz
+          children:
+            oak:
+              de: eiche
+            pine:
+              de: kiefer
+            spruce:
+              de: fichte
+            larch:
+              de: lärche
+            fir:
+              de: tanne
+    transformed:
+      de: transformiert
+      children:
+        brick:
+          de: ziegel
+        concrete:
+          de: beton
+        foam:
+          de: schaumstoff
+        glass:
+          de: glas
+        metal:
+          de: metall
+          children:
+            aluminium:
+              de: aluminium
+            bronze:
+              de: bronze
+            cast iron:
+              de: gusseisen
+            copper:
+              de: kupfer
+            iron:
+              de: eisen
+            stainless steel:
+              de: edelstahl
+            zinc:
+              de: zink
+        plastic:
+          de: kunstoff
+        ceramics:
+          de: keramik
+        wood-based:
+          de: holzwerkstoff
 component:
-  wall:
-    joint pattern:
-    kerb:
-    niche:
-    offset:
-    opening:
-    plaster:
-    base:
-  column:
-    kerb:
-      base:
-      capital:
-    shaft:
-  roof:
-    barrel roof:
-    bow roof:
-    butterfly roof:
-    flat roof:
-    gable roof:
-    hip roof:
-    mansard roof:
-    ridget turret:
-    shed roof:
-    tent roof:
-    purlin roof:
-    rafter roof:
-    kerb:
-      attic:
-      eaves:
-      ridge:
-    opening:
-    offset:
-    plaster:
-  slab:
-    base plate:
-    offset:
-    opening:
-    ramp:
-    ripped ceeling:
-    beam ceeling:
-    joint pattern:
-  beam:
-  door:
-    lintel:
-    reveal:
-    treshold:
-  window:
-    lintel:
-    reveal:
-    sill:
-    skylight:
-  staircase:
-  isolation:
-  technical component:
+  de: bauteil
+  children:
+    wall:
+      de: wand
+      children:
+        joint pattern:
+          de: fugebild
+        kerb:
+          de: abschluss
+        niche:
+          de: nische
+        offset:
+          de: versprung
+        opening:
+          de: durchbruch
+        plaster:
+          de: putz
+        base:
+          de: sockel
+    column:
+      de: stütze
+      children:
+        kerb:
+          de: abschluss
+          children:
+            base:
+              de: basis
+            capital:
+              de: säulenkopf
+        shaft:
+          de: säulenschaft
+    roof:
+      de: dach
+      children:
+        barrel roof:
+          de: tonnendach
+        bow roof:
+          de: bogendach
+        butterfly roof:
+          de: schmetterlingsdach
+        flat roof:
+          de: flachdach
+        gable roof:
+          de: satteldach
+        hip roof:
+          de: walmdach
+        mansard roof:
+          de: mansarddach
+        ridget turret:
+          de: dachreiter
+        shed roof:
+          de: pultdach
+        tent roof:
+          de: zeltdach
+        purlin roof:
+          de: pfettendach
+        rafter roof:
+          de: sparrendach
+        kerb:
+          de: abschluss
+          children:
+            attic:
+              de: attika
+            eaves:
+              de: traufe
+            ridge:
+              de: first
+        opening:
+          de: durchbruch
+        offset:
+          de: versprung
+        plaster:
+          de: putz
+    slab:
+      de: decke
+      children:
+        base plate:
+          de: bodenplatte
+        offset:
+          de: versprung
+        opening:
+          de: durchbruch
+        ramp:
+          de: rampe
+        ripped ceeling:
+          de: rippen
+        beam ceeling:
+          de: balkendecke
+        joint pattern:
+          de: fugenbild
+    beam:
+      de: träger
+    door:
+      de: tür
+      children:
+        lintel:
+          de: sturz
+        reveal:
+          de: leibung
+        treshold:
+          de: schwelle
+    window:
+      de: fenster
+      children:
+        lintel:
+          de: sturz
+        reveal:
+          de: leibung
+        sill:
+          de: fensterbank
+        skylight:
+          de: dachfenster
+    staircase:
+      de: treppe
+    isolation:
+      de: dämmung
+    technical component:
+      de: technisches bauteil
 geometry:
-  amorphous:
-  asymmetry:
-  curved:
-  edgeed:
-  face:
-  gird:
-  line:
-  point:
-  solid:
-  symmetry:
+  de: geometrie
+  children:
+    amorphous:
+      de: amorph
+    asymmetry:
+      de: asymmetrie
+    curved:
+      de: geboden
+    edged:
+      de: kantig
+    face:
+      de: fläche
+    gird:
+      de: raster
+    line:
+      de: linie
+    point:
+      de: punkt
+    solid:
+      de: körper
+    symmetry:
+      de: symmetrie

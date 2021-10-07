@@ -75,7 +75,7 @@
               <v-row>
                 <v-treeview
                   v-model="selectedCategories"
-                  :items="treeCategories"
+                  :items="categoryTreeItems"
                   :search="search"
                   hoverable
                   open-on-click
@@ -131,6 +131,7 @@ import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import { LocalStorageKey, tagSeparator } from "@/utils/contants";
 import { unique } from "@/utils/functions";
+import { CategoryTree } from "@/models/category-tree";
 
 @Component({
   components: {
@@ -153,8 +154,8 @@ export default class ImageUpload extends Vue {
   images: UploadImage[] = [];
   imagesUploading = false;
 
-  get treeCategories(): Item[] {
-    return this.parseTree(categories);
+  get categoryTreeItems(): Item[] {
+    return this.getTreeItems(categories as CategoryTree);
   }
 
   get selectedTags(): string[] {
@@ -193,34 +194,26 @@ export default class ImageUpload extends Vue {
     );
   }
 
-  parseTree(obj: unknown, parents: string[] = []): Item[] {
-    return Object.entries(obj as Record<string, unknown>).flatMap(
-      ([key, value]) => {
-        const id = [...parents, key];
-        const type = typeof value;
-        if (type === "object") {
-          if (value === null) {
-            return [
-              {
-                id: id.join(tagSeparator),
-                name: key,
-              },
-            ];
-          } else {
-            return [
-              {
-                id: id.join(tagSeparator),
-                name: key,
-                children: this.parseTree(value, id),
-              },
-            ];
-          }
-        } else {
-          console.error(`unexpected type ${type} for key ${id.join(".")}`);
-          return [];
-        }
+  private getTreeItems(tree: CategoryTree, parents: string[] = []): Item[] {
+    return Object.entries(tree).flatMap(([key, value]) => {
+      const id = [...parents, key];
+      if (value.children) {
+        return [
+          {
+            id: id.join(tagSeparator),
+            name: key,
+            children: this.getTreeItems(value.children, id),
+          },
+        ];
+      } else {
+        return [
+          {
+            id: id.join(tagSeparator),
+            name: key,
+          },
+        ];
       }
-    );
+    });
   }
 
   parseTreeArray(obj: unknown, parents: string[] = []): string[][] {
