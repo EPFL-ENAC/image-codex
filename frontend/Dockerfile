@@ -5,7 +5,6 @@ RUN npm install
 COPY ./ .
 RUN npm run build
 
-FROM nginx:alpine as production-stage
-RUN mkdir /app
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=build-stage /app/dist /app
+FROM httpd:alpine as production-stage
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+COPY --from=build-stage /app/dist /usr/local/apache2/htdocs/
