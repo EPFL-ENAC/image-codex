@@ -131,7 +131,7 @@ import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import { LocalStorageKey, tagSeparator } from "@/utils/contants";
 import { unique } from "@/utils/functions";
-import { CategoryTree } from "@/models/category-tree";
+import { CategoryNode, CategoryTree } from "@/models/category-tree";
 
 @Component({
   components: {
@@ -179,15 +179,6 @@ export default class ImageUpload extends Vue {
     this.customTags = values.filter((value) => !categories.has(value));
   }
 
-  get treeArray(): unknown[] {
-    return this.parseTreeArray(categories).map((item) => {
-      return {
-        text: item[item.length - 1],
-        value: item,
-      };
-    });
-  }
-
   get isValidImages(): boolean {
     return (
       this.images.length > 0 && this.images.every((image) => image.isValid)
@@ -195,44 +186,17 @@ export default class ImageUpload extends Vue {
   }
 
   private getTreeItems(tree: CategoryTree, parents: string[] = []): Item[] {
+    const locale = this.$i18n.locale as keyof CategoryNode;
     return Object.entries(tree).flatMap(([key, value]) => {
       const id = [...parents, key];
-      if (value.children) {
-        return [
-          {
-            id: id.join(tagSeparator),
-            name: key,
-            children: this.getTreeItems(value.children, id),
-          },
-        ];
-      } else {
-        return [
-          {
-            id: id.join(tagSeparator),
-            name: key,
-          },
-        ];
-      }
+      return [
+        {
+          id: id.join(tagSeparator),
+          name: (value[locale] as string) ?? key,
+          children: value.children ? this.getTreeItems(value.children, id) : [],
+        },
+      ];
     });
-  }
-
-  parseTreeArray(obj: unknown, parents: string[] = []): string[][] {
-    return Object.entries(obj as Record<string, unknown>).flatMap(
-      ([key, value]) => {
-        const id = [...parents, key];
-        const type = typeof value;
-        if (type === "object") {
-          if (value === null) {
-            return [id];
-          } else {
-            return this.parseTreeArray(value, id);
-          }
-        } else {
-          console.error(`unexpected type ${type} for key ${id.join(".")}`);
-          return [];
-        }
-      }
-    );
   }
 
   mapFileToBase64(blob: Blob): Promise<string> {
@@ -269,7 +233,7 @@ export default class ImageUpload extends Vue {
       this.images.map((image) => {
         const content = image.write();
         const data = content.startsWith("data:")
-          ? content?.split(",")[1]
+          ? content.split(",")[1]
           : content;
         return this.$http.post("/images", { content: data });
       })
