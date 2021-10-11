@@ -1,16 +1,10 @@
 <template>
   <v-card flat>
     <v-card-text>
-      <v-combobox
+      <tag-selector
         v-model="selectedTags"
-        :items="tags"
-        label="Tags"
-        chips
-        clearable
-        deletable-chips
-        multiple
         @change="initializeImages"
-      ></v-combobox>
+      ></tag-selector>
       <v-text-field
         v-model="author"
         label="Author"
@@ -56,13 +50,17 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import categories from "@/assets/categories.yaml";
 import CursorPage from "@/models/cursorPage";
-import { paramsSerializer, unique } from "@/utils/functions";
+import { paramsSerializer } from "@/utils/functions";
 import BackendImage from "@/models/backend-image";
 import { LocalStorageKey } from "@/utils/contants";
+import TagSelector from "./TagSelector.vue";
 
-@Component
+@Component({
+  components: {
+    TagSelector,
+  },
+})
 export default class ImageBrowser extends Vue {
   selectedTags: string[] = [];
   images: BackendImage[] = [];
@@ -70,10 +68,6 @@ export default class ImageBrowser extends Vue {
   next: string | undefined = undefined;
   imagesCount = 0;
   author = localStorage.getItem(LocalStorageKey.Author);
-
-  get tags(): string[] {
-    return this.getItems(categories).filter(unique).sort();
-  }
 
   get remainingImagesCount(): number {
     return this.imagesCount - this.images.length;
@@ -85,24 +79,6 @@ export default class ImageBrowser extends Vue {
 
   getTagColor(tag: string): string | undefined {
     return this.selectedTags.includes(tag) ? "secondary" : undefined;
-  }
-
-  getItems(obj: unknown): string[] {
-    return Object.entries(obj as Record<string, unknown>).flatMap(
-      ([key, value]) => {
-        const type = typeof value;
-        if (type === "object") {
-          if (value === null) {
-            return [key];
-          } else {
-            return [key].concat(this.getItems(value));
-          }
-        } else {
-          console.error(`unexpected type ${type} for key ${key}`);
-          return [];
-        }
-      }
-    );
   }
 
   private updateItems(callback: (images: BackendImage[]) => void) {

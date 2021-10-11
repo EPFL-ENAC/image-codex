@@ -56,33 +56,7 @@
                 </v-select>
               </v-row>
               <v-row>
-                <v-combobox
-                  v-model="selectedTags"
-                  label="Tags"
-                  chips
-                  deletable-chips
-                  multiple
-                ></v-combobox>
-              </v-row>
-              <v-row>
-                <v-text-field
-                  v-model="search"
-                  label="Search Categories"
-                  hide-details
-                  clearable
-                ></v-text-field>
-              </v-row>
-              <v-row>
-                <v-treeview
-                  v-model="selectedCategories"
-                  :items="categoryTreeItems"
-                  :search="search"
-                  hoverable
-                  open-on-click
-                  selectable
-                  selected-color="primary"
-                  selection-type="independent"
-                ></v-treeview>
+                <tag-selector v-model="tags"></tag-selector>
               </v-row>
               <v-row>
                 <v-btn
@@ -125,17 +99,16 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import download from "downloadjs";
-import categories from "@/assets/categories.yaml";
 import ImageItem from "./ImageItem.vue";
 import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
-import { LocalStorageKey, tagSeparator } from "@/utils/contants";
-import { unique } from "@/utils/functions";
-import { CategoryNode, CategoryTree } from "@/models/category-tree";
+import { LocalStorageKey } from "@/utils/contants";
+import TagSelector from "@/components/TagSelector.vue";
 
 @Component({
   components: {
     ImageItem,
+    TagSelector,
   },
 })
 export default class ImageUpload extends Vue {
@@ -148,55 +121,15 @@ export default class ImageUpload extends Vue {
   author = localStorage.getItem(LocalStorageKey.Author) ?? "";
   license = this.licenses[0];
   search = "";
-  selectedCategories: string[] = [];
-  customTags: string[] = [];
   imageFiles: File[] = [];
   images: UploadImage[] = [];
+  tags: string[] = [];
   imagesUploading = false;
-
-  get categoryTreeItems(): Item[] {
-    return this.getTreeItems(categories as CategoryTree);
-  }
-
-  get selectedTags(): string[] {
-    return this.selectedCategories
-      .flatMap((categories) => categories.split(tagSeparator))
-      .filter(unique)
-      .concat(this.customTags)
-      .sort();
-  }
-
-  set selectedTags(values: string[]) {
-    const tags = new Set(values);
-    this.selectedCategories = this.selectedCategories.filter((category) =>
-      category.split(tagSeparator).every((tag) => tags.has(tag))
-    );
-    const categories = new Set(
-      this.selectedCategories.flatMap((categories) =>
-        categories.split(tagSeparator)
-      )
-    );
-    this.customTags = values.filter((value) => !categories.has(value));
-  }
 
   get isValidImages(): boolean {
     return (
       this.images.length > 0 && this.images.every((image) => image.isValid)
     );
-  }
-
-  private getTreeItems(tree: CategoryTree, parents: string[] = []): Item[] {
-    const locale = this.$i18n.locale as keyof CategoryNode;
-    return Object.entries(tree).flatMap(([key, value]) => {
-      const id = [...parents, key];
-      return [
-        {
-          id: id.join(tagSeparator),
-          name: (value[locale] as string) ?? key,
-          children: value.children ? this.getTreeItems(value.children, id) : [],
-        },
-      ];
-    });
   }
 
   mapFileToBase64(blob: Blob): Promise<string> {
@@ -243,7 +176,7 @@ export default class ImageUpload extends Vue {
   }
 
   onClickAddToImage(): void {
-    const tags = this.selectedTags;
+    const tags = this.tags;
     this.images.forEach((image) => {
       image.newAuthor = this.author;
       image.newCopyright = this.license;
@@ -254,11 +187,5 @@ export default class ImageUpload extends Vue {
       item.$forceUpdate();
     });
   }
-}
-
-interface Item {
-  id: string;
-  name: string;
-  children?: Item[];
 }
 </script>
