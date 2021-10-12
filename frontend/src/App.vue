@@ -10,7 +10,7 @@
           </v-btn>
         </template>
         <v-card>
-          <v-form @submit.prevent="setUsername">
+          <v-form @submit.prevent="usernameDialog = false">
             <v-card-title>Username</v-card-title>
             <v-card-text>
               <v-text-field v-model="username"></v-text-field>
@@ -62,7 +62,6 @@ import { LocalStorageKey } from "./utils/contants";
 @Component
 export default class App extends Vue {
   languages = ["en", "de"];
-  username = localStorage.getItem(LocalStorageKey.Username) ?? "";
   usernameDialog = !this.username;
 
   setLanguage(language: string): void {
@@ -70,9 +69,12 @@ export default class App extends Vue {
     localStorage.setItem(LocalStorageKey.Language, language);
   }
 
-  setUsername(): void {
-    this.usernameDialog = false;
-    localStorage.setItem(LocalStorageKey.Username, this.username);
+  get username(): string {
+    return this.$store.state.username;
+  }
+
+  set username(value: string) {
+    this.$store.commit("setUsername", value);
   }
 }
 </script>

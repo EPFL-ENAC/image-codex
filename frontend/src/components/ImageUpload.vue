@@ -27,16 +27,7 @@
         <v-col cols="12" sm="4">
           <v-sheet class="ma-1">
             <v-form v-model="formValid">
-              <v-row>
-                <v-text-field
-                  v-model="author"
-                  label="Author"
-                  :rules="[rules.required]"
-                  required
-                  @change="onChangeAuthor"
-                ></v-text-field>
-              </v-row>
-              <v-row>
+              <v-row v-if="licenses.length > 1">
                 <v-select
                   v-model="license"
                   :items="licenses"
@@ -101,7 +92,6 @@ import download from "downloadjs";
 import ImageItem from "./ImageItem.vue";
 import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
-import { LocalStorageKey } from "@/utils/contants";
 import TagSelector from "@/components/TagSelector.vue";
 
 @Component({
@@ -117,7 +107,6 @@ export default class ImageUpload extends Vue {
   ];
 
   formValid = false;
-  author = localStorage.getItem(LocalStorageKey.Username) ?? "";
   license = this.licenses[0];
   search = "";
   imageFiles: File[] = [];
@@ -148,10 +137,6 @@ export default class ImageUpload extends Vue {
     });
   }
 
-  onChangeAuthor(): void {
-    localStorage.setItem(LocalStorageKey.Username, this.author);
-  }
-
   onDownloadImages(): void {
     this.images.forEach((image) => {
       const content = image.write();
@@ -177,7 +162,7 @@ export default class ImageUpload extends Vue {
   onClickAddToImage(): void {
     const tags = this.tags;
     this.images.forEach((image) => {
-      image.newAuthor = this.author;
+      image.newAuthor = this.$store.state.username;
       image.newCopyright = this.license;
       image.addTags(tags);
     });

@@ -52,7 +52,6 @@ import { Vue, Component } from "vue-property-decorator";
 import CursorPage from "@/models/cursorPage";
 import { paramsSerializer } from "@/utils/functions";
 import BackendImage from "@/models/backend-image";
-import { LocalStorageKey } from "@/utils/contants";
 import TagSelector from "./TagSelector.vue";
 
 @Component({
@@ -66,7 +65,7 @@ export default class ImageBrowser extends Vue {
   readonly pageSize = 4;
   next: string | undefined = undefined;
   imagesCount = 0;
-  author = localStorage.getItem(LocalStorageKey.Username);
+  author = this.$store.state.username;
 
   get remainingImagesCount(): number {
     return this.imagesCount - this.images.length;
