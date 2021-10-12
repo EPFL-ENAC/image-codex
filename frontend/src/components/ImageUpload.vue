@@ -117,7 +117,7 @@ export default class ImageUpload extends Vue {
   ];
 
   formValid = false;
-  author = localStorage.getItem(LocalStorageKey.Author) ?? "";
+  author = localStorage.getItem(LocalStorageKey.Username) ?? "";
   license = this.licenses[0];
   search = "";
   imageFiles: File[] = [];
@@ -149,7 +149,7 @@ export default class ImageUpload extends Vue {
   }
 
   onChangeAuthor(): void {
-    localStorage.setItem(LocalStorageKey.Author, this.author);
+    localStorage.setItem(LocalStorageKey.Username, this.author);
   }
 
   onDownloadImages(): void {

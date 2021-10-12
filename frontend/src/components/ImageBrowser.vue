@@ -66,7 +66,7 @@ export default class ImageBrowser extends Vue {
   readonly pageSize = 4;
   next: string | undefined = undefined;
   imagesCount = 0;
-  author = localStorage.getItem(LocalStorageKey.Author);
+  author = localStorage.getItem(LocalStorageKey.Username);
 
   get remainingImagesCount(): number {
     return this.imagesCount - this.images.length;
