@@ -96,8 +96,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { Vue, Component } from "vue-property-decorator";
 import download from "downloadjs";
 import ImageItem from "./ImageItem.vue";
 import UploadImage from "@/models/upload-image";

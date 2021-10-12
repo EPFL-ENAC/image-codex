@@ -13,7 +13,7 @@
           <v-list-item
             v-for="language in languages"
             :key="language"
-            @click="() => ($i18n.locale = language)"
+            @click="setLanguage(language)"
           >
             <v-list-item-title>{{ language }}</v-list-item-title>
           </v-list-item>
@@ -42,9 +42,15 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { LocalStorageKey } from "./utils/contants";
 
 @Component
 export default class App extends Vue {
   languages = ["en", "de"];
+
+  setLanguage(language: string): void {
+    this.$i18n.locale = language;
+    localStorage.setItem(LocalStorageKey.Language, language);
+  }
 }
 </script>

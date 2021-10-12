@@ -12,8 +12,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { Vue, Component, Watch } from "vue-property-decorator";
 import categories from "@/assets/categories.yaml";
 import { CategoryNode, CategoryTree } from "@/models/category-tree";
 import { tagSeparator } from "@/utils/contants";
@@ -47,6 +46,21 @@ export default class TagSelector extends Vue {
       `Actual tags (${this.selectedTags.length}): ` +
       this.selectedTags.join(", ")
     );
+  }
+
+  @Watch("$i18n.locale")
+  onLocaleChanged(): void {
+    this.selectedCategories = this.selectedCategories.map((category) => {
+      if (typeof category === "string") {
+        return category;
+      } else {
+        return (
+          this.categoryComboboxItems.find(
+            (item) => item.value === category.value
+          ) ?? category
+        );
+      }
+    });
   }
 
   onChange(): void {
