@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination.api import add_pagination
 
-from image_codex.routers import images, root
+from image_codex.routers import compositions, images, root
 
 
 class EnvInterpolation(configparser.BasicInterpolation):
@@ -35,6 +35,7 @@ else:
     print('cors enabled')
 app.include_router(root.router)
 app.include_router(images.router)
+app.include_router(compositions.router)
 
 add_pagination(app)
 

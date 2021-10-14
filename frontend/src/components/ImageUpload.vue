@@ -93,6 +93,7 @@ import ImageItem from "./ImageItem.vue";
 import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import TagSelector from "@/components/TagSelector.vue";
+import { ApiFile } from "@/models/api";
 
 @Component({
   components: {
@@ -149,10 +150,12 @@ export default class ImageUpload extends Vue {
     Promise.all(
       this.images.map((image) => {
         const content = image.write();
-        const data = content.startsWith("data:")
-          ? content.split(",")[1]
-          : content;
-        return this.$http.post("/images", { content: data });
+        const apiFile: ApiFile = {
+          name: image.name,
+          type: image.type,
+          base64: content.startsWith("data:") ? content.split(",")[1] : content,
+        };
+        return this.$http.post("/images", apiFile);
       })
     ).then(() => {
       this.imagesUploading = false;
