@@ -23,6 +23,8 @@ class ResponseImage(BaseModel):
     id: str
     name: str
     url: str
+    width: int
+    height: int
     tags: List[str]
     author: str
     license: str
@@ -93,6 +95,8 @@ def __get_response_images(resource: dict[str, Any]) -> ResponseImage:
     return ResponseImage(id=resource.get('asset_id'),
                          name=resource.get('filename'),
                          url=resource.get('secure_url'),
+                         width=resource.get('width'),
+                         height=resource.get('height'),
                          tags=resource.get('tags'),
                          author=context.get('Artist'),
                          license=context.get('Copyright'))

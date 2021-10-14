@@ -4,4 +4,4 @@ declare module "*.yaml" {
 }
 
 declare module "piexifjs";
-declare module "vue-grid-layout";
+declare module "vue-draggable-resizable";
