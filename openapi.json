@@ -172,8 +172,6 @@
       "ApiFile": {
         "title": "ApiFile",
         "required": [
-          "name",
-          "type",
           "base64"
         ],
         "type": "object",

@@ -1,7 +1,9 @@
+from typing import Optional
+
 from pydantic.main import BaseModel
 
 
 class ApiFile(BaseModel):
-    name: str
-    type: str
+    name: Optional[str]
+    type: Optional[str]
     base64: str

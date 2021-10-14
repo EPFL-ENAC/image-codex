@@ -1,24 +1,18 @@
 <template>
   <v-row>
     <v-col cols="8">
-      <v-sheet class="ma-4" elevation="4">
-        <v-toolbar color="secondary">
+      <v-card class="ma-4" color="secondary" dark>
+        <v-card-title>
+          <v-text-field v-model="name" label="Name" hide-details></v-text-field>
+        </v-card-title>
+        <v-card-subtitle>
           <v-row>
-            <v-col>
-              <v-text-field
-                v-model="name"
-                label="Name"
-                dark
-                hide-details
-              ></v-text-field>
-            </v-col>
             <v-col>
               <v-text-field
                 v-model.number="height"
                 label="Height"
                 suffix="px"
                 type="number"
-                dark
                 hide-details
               ></v-text-field>
             </v-col>
@@ -28,28 +22,43 @@
                 label="Width"
                 suffix="px"
                 type="number"
-                dark
                 hide-details
               ></v-text-field>
             </v-col>
           </v-row>
-        </v-toolbar>
-        <div class="background">
-          <div class="parent" :style="parentStyle">
-            <vue-draggable-resizable
-              v-for="(layout, index) in layouts"
-              :key="width + '-' + height + '-' + index"
-              :w="layout.width"
-              :h="layout.height"
-              :parent="true"
-              :lockAspectRatio="true"
-              :grid="[5, 5]"
-            >
-              <v-img :src="layout.value.url" contain></v-img>
-            </vue-draggable-resizable>
+        </v-card-subtitle>
+        <v-card-text>
+          <div class="background">
+            <div class="parent" :style="parentStyle">
+              <vue-draggable-resizable
+                v-for="(image, index) in images"
+                :key="width + '-' + height + '-' + index"
+                :w="image.width"
+                :h="image.height"
+                :grid="[5, 5]"
+                :lockAspectRatio="true"
+                :parent="true"
+                @dragging="(x, y) => onDrag(index, x, y)"
+                @resizing="
+                  (x, y, width, height) => onResize(index, x, y, width, height)
+                "
+              >
+                <v-img :src="image.url" contain></v-img>
+              </vue-draggable-resizable>
+            </div>
           </div>
-        </div>
-      </v-sheet>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            :disabled="!name || !images"
+            color="primary"
+            @click="downloadComposition"
+          >
+            <v-icon left>mdi-download</v-icon>
+            Download
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-col>
     <v-col cols="4">
       <image-browser @add="addImage"></image-browser>
@@ -79,6 +88,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import ImageBrowser from "@/components/ImageBrowser.vue";
 import BackendImage from "@/models/backend-image";
+import { ApiFile, ComposedImage, RequestComposition } from "@/generated/api";
+import download from "downloadjs";
 
 @Component({
   components: {
@@ -89,7 +100,7 @@ export default class Workspace extends Vue {
   name = "";
   height = 794;
   width = 1123;
-  layouts: Layout<BackendImage>[] = [];
+  images: ComposedImage[] = [];
 
   get parentStyle(): Record<string, unknown> {
     return {
@@ -98,23 +109,49 @@ export default class Workspace extends Vue {
     };
   }
 
+  onDrag(index: number, x: number, y: number): void {
+    this.images[index].x = x;
+    this.images[index].y = y;
+  }
+
+  onResize(
+    index: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ): void {
+    this.images[index].x = x;
+    this.images[index].y = y;
+    this.images[index].width = width;
+    this.images[index].height = height;
+  }
+
   addImage(image: BackendImage): void {
-    const ratio = Math.max(image.width, image.height) / 200;
-    this.layouts.push({
+    const maxInitSize = 200;
+    const ratio = Math.max(image.width, image.height) / maxInitSize;
+    this.images.push({
+      id: image.id,
+      url: image.url,
       x: 0,
       y: 0,
       width: image.width / ratio,
       height: image.height / ratio,
-      value: image,
     });
   }
-}
 
-interface Layout<T> {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  value: T;
+  downloadComposition(): void {
+    const composition: RequestComposition = {
+      name: this.name,
+      width: this.width,
+      height: this.height,
+      images: this.images,
+    };
+    this.$http.post<ApiFile>("/compositions", composition).then((response) => {
+      const file = response.data;
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+      download(`data:${file.type};base64,${file.base64}`, file.name, file.type);
+    });
+  }
 }
 </script>

@@ -32,13 +32,13 @@ export interface ApiFile {
      * @type {string}
      * @memberof ApiFile
      */
-    name: string;
+    name?: string;
     /**
      * 
      * @type {string}
      * @memberof ApiFile
      */
-    type: string;
+    type?: string;
     /**
      * 
      * @type {string}
