@@ -9,7 +9,7 @@ make run-backend
 
 ## Generate
 
-Folder frontend/src/generated is generated from backend API.
+Folder frontend/src/backend is generated from backend API.
 
 ```bash
 # update generated files (requires Java installed)

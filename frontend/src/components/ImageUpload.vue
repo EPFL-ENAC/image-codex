@@ -93,7 +93,7 @@ import ImageItem from "./ImageItem.vue";
 import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import TagSelector from "@/components/TagSelector.vue";
-import { ApiFile } from "@/generated/api";
+import { ApiFile } from "@/backend";
 
 @Component({
   components: {
