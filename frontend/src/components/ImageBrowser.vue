@@ -49,10 +49,9 @@
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import CursorPage from "@/models/cursorPage";
 import { paramsSerializer } from "@/utils/functions";
-import BackendImage from "@/models/backend-image";
 import TagSelector from "./TagSelector.vue";
+import { CursorPageResponseImage, ResponseImage } from "@/backend";
 
 @Component({
   components: {
@@ -61,7 +60,7 @@ import TagSelector from "./TagSelector.vue";
 })
 export default class ImageBrowser extends Vue {
   selectedTags: string[] = [];
-  images: BackendImage[] = [];
+  images: ResponseImage[] = [];
   readonly pageSize = 4;
   next: string | undefined = undefined;
   imagesCount = 0;
@@ -79,9 +78,9 @@ export default class ImageBrowser extends Vue {
     return this.selectedTags.includes(tag) ? "secondary" : undefined;
   }
 
-  private updateItems(callback: (images: BackendImage[]) => void) {
+  private updateItems(callback: (images: ResponseImage[]) => void) {
     this.$http
-      .get<CursorPage<BackendImage>>("/images", {
+      .get<CursorPageResponseImage>("/images", {
         params: {
           size: this.pageSize,
           next: this.next,

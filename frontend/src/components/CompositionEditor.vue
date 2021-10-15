@@ -1,13 +1,17 @@
 <template>
   <v-card color="secondary" dark>
     <v-card-title>
-      <v-text-field v-model="name" label="Name" hide-details></v-text-field>
+      <v-text-field
+        v-model="composition.name"
+        label="Name"
+        hide-details
+      ></v-text-field>
     </v-card-title>
     <v-card-subtitle>
       <v-row>
         <v-col>
           <v-text-field
-            v-model.number="height"
+            v-model.number="composition.height"
             label="Height"
             suffix="px"
             type="number"
@@ -16,7 +20,7 @@
         </v-col>
         <v-col>
           <v-text-field
-            v-model.number="width"
+            v-model.number="composition.width"
             label="Width"
             suffix="px"
             type="number"
@@ -29,8 +33,10 @@
       <div class="background">
         <div class="parent" :style="parentStyle">
           <vue-draggable-resizable
-            v-for="(image, index) in images"
-            :key="width + '-' + height + '-' + index"
+            v-for="(image, index) in composition.images"
+            :key="composition.width + '-' + composition.height + '-' + index"
+            :x="image.x"
+            :y="image.y"
             :w="image.width"
             :h="image.height"
             :grid="[5, 5]"
@@ -47,11 +53,7 @@
       </div>
     </v-card-text>
     <v-card-actions>
-      <v-btn
-        :disabled="!name || !images"
-        color="primary"
-        @click="downloadComposition"
-      >
+      <v-btn :disabled="!isValid" color="primary" @click="downloadComposition">
         <v-icon left>mdi-download</v-icon>
         Download
       </v-btn>
@@ -79,30 +81,69 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { ApiFile, ComposedImage, RequestComposition } from "@/backend";
+import { ApiFile, RequestComposition, ResponseImage } from "@/backend";
 import download from "downloadjs";
-
-const CompositionEditorProps = Vue.extend({
-  props: {
-    images: Array as () => ComposedImage[],
-  },
-});
+import { LocalStorageKey } from "@/utils/contants";
 
 @Component
-export default class CompositionEditor extends CompositionEditorProps {
-  name = "";
-  height = 794;
-  width = 1123;
-  get parentStyle(): Record<string, unknown> {
+export default class CompositionEditor extends Vue {
+  composition: RequestComposition = CompositionEditor.getCompositionOrDefault();
+
+  private static getCompositionOrDefault(): RequestComposition {
+    const value = localStorage.getItem(LocalStorageKey.Composition);
+    if (value) {
+      try {
+        return JSON.parse(value) as RequestComposition;
+      } catch (exception) {
+        localStorage.removeItem(LocalStorageKey.Composition);
+      }
+    }
     return {
-      width: this.width + "px",
-      height: this.height + "px",
+      name: "",
+      width: 1123,
+      height: 794,
+      images: [],
     };
   }
-  onDrag(index: number, x: number, y: number): void {
-    this.images[index].x = x;
-    this.images[index].y = y;
+
+  get parentStyle(): Record<string, unknown> {
+    return {
+      width: this.composition.width + "px",
+      height: this.composition.height + "px",
+    };
   }
+
+  get isValid(): boolean {
+    return (
+      this.composition.name.length > 0 && this.composition.images.length > 0
+    );
+  }
+
+  updated(): void {
+    localStorage.setItem(
+      LocalStorageKey.Composition,
+      JSON.stringify(this.composition)
+    );
+  }
+
+  public addImage(image: ResponseImage): void {
+    const maxInitSize = 200;
+    const ratio = Math.max(image.width, image.height) / maxInitSize;
+    this.composition.images.push({
+      id: image.id,
+      url: image.url,
+      x: 0,
+      y: 0,
+      width: image.width / ratio,
+      height: image.height / ratio,
+    });
+  }
+
+  onDrag(index: number, x: number, y: number): void {
+    this.composition.images[index].x = x;
+    this.composition.images[index].y = y;
+  }
+
   onResize(
     index: number,
     x: number,
@@ -110,23 +151,24 @@ export default class CompositionEditor extends CompositionEditorProps {
     width: number,
     height: number
   ): void {
-    this.images[index].x = x;
-    this.images[index].y = y;
-    this.images[index].width = width;
-    this.images[index].height = height;
+    this.composition.images[index].x = x;
+    this.composition.images[index].y = y;
+    this.composition.images[index].width = width;
+    this.composition.images[index].height = height;
   }
+
   downloadComposition(): void {
-    const composition: RequestComposition = {
-      name: this.name,
-      width: this.width,
-      height: this.height,
-      images: this.images,
-    };
-    this.$http.post<ApiFile>("/compositions", composition).then((response) => {
-      const file = response.data;
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
-      download(`data:${file.type};base64,${file.base64}`, file.name, file.type);
-    });
+    this.$http
+      .post<ApiFile>("/compositions", this.composition)
+      .then((response) => {
+        const file = response.data;
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+        download(
+          `data:${file.type};base64,${file.base64}`,
+          file.name,
+          file.type
+        );
+      });
   }
 }
 </script>
