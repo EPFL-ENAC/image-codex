@@ -27,6 +27,21 @@
             hide-details
           ></v-text-field>
         </v-col>
+        <v-col>
+          <v-switch
+            v-model="showOptions"
+            label="Show Options"
+            hide-details
+          ></v-switch>
+        </v-col>
+        <v-col>
+          <v-text-field
+            v-model.number="gridSize"
+            label="Grid size"
+            type="number"
+            hide-details
+          ></v-text-field>
+        </v-col>
       </v-row>
     </v-card-subtitle>
     <v-card-text>
@@ -34,20 +49,51 @@
         <div class="parent" :style="parentStyle">
           <vue-draggable-resizable
             v-for="(image, index) in composition.images"
-            :key="composition.width + '-' + composition.height + '-' + index"
+            :key="
+              composition.width +
+              '-' +
+              composition.height +
+              '-' +
+              index +
+              '-' +
+              image.id
+            "
             :x="image.x"
             :y="image.y"
             :w="image.width"
             :h="image.height"
-            :grid="[5, 5]"
+            :grid="[gridSize, gridSize]"
             :lockAspectRatio="true"
             :parent="true"
-            @dragging="(x, y) => onDrag(index, x, y)"
+            @dragging="(x, y) => dragImage(index, x, y)"
             @resizing="
-              (x, y, width, height) => onResize(index, x, y, width, height)
+              (x, y, width, height) => resizeImage(index, x, y, width, height)
             "
           >
             <v-img :src="image.url" contain></v-img>
+            <v-speed-dial
+              v-if="showOptions"
+              fixed
+              left
+              open-on-hover
+              top
+              direction="bottom"
+            >
+              <template v-slot:activator>
+                <v-btn fab>
+                  <v-icon>mdi-dots-horizontal</v-icon>
+                </v-btn>
+              </template>
+              <v-btn fab x-small @click="deleteImage(index)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+              <v-btn fab x-small @click="flipToFront(index)">
+                <v-icon>mdi-flip-to-front</v-icon>
+              </v-btn>
+              <v-btn fab x-small @click="flipToBack(index)">
+                <v-icon>mdi-flip-to-back</v-icon>
+              </v-btn>
+            </v-speed-dial>
           </vue-draggable-resizable>
         </div>
       </div>
@@ -81,13 +127,20 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { ApiFile, RequestComposition, ResponseImage } from "@/backend";
+import {
+  ApiFile,
+  ComposedImage,
+  RequestComposition,
+  ResponseImage,
+} from "@/backend";
 import download from "downloadjs";
 import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class CompositionEditor extends Vue {
   composition: RequestComposition = CompositionEditor.getCompositionOrDefault();
+  showOptions = true;
+  gridSize = 5;
 
   private static getCompositionOrDefault(): RequestComposition {
     const value = localStorage.getItem(LocalStorageKey.Composition);
@@ -139,12 +192,12 @@ export default class CompositionEditor extends Vue {
     });
   }
 
-  onDrag(index: number, x: number, y: number): void {
+  dragImage(index: number, x: number, y: number): void {
     this.composition.images[index].x = x;
     this.composition.images[index].y = y;
   }
 
-  onResize(
+  resizeImage(
     index: number,
     x: number,
     y: number,
@@ -155,6 +208,18 @@ export default class CompositionEditor extends Vue {
     this.composition.images[index].y = y;
     this.composition.images[index].width = width;
     this.composition.images[index].height = height;
+  }
+
+  deleteImage(index: number): ComposedImage[] {
+    return this.composition.images.splice(index, 1);
+  }
+
+  flipToFront(index: number): void {
+    this.composition.images.push(...this.deleteImage(index));
+  }
+
+  flipToBack(index: number): void {
+    this.composition.images.unshift(...this.deleteImage(index));
   }
 
   downloadComposition(): void {
