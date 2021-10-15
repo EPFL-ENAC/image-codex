@@ -35,6 +35,13 @@
           ></v-switch>
         </v-col>
         <v-col>
+          <v-switch
+            v-model="showTags"
+            label="Show Tags"
+            hide-details
+          ></v-switch>
+        </v-col>
+        <v-col>
           <v-text-field
             v-model.number="gridSize"
             label="Grid size"
@@ -94,6 +101,13 @@
                 <v-icon>mdi-flip-to-back</v-icon>
               </v-btn>
             </v-speed-dial>
+            <v-overlay v-if="showTags">
+              <v-chip-group class="mx-2" column>
+                <v-chip v-for="tag in getImageTags(image.id)" :key="tag" small>
+                  {{ tag }}
+                </v-chip>
+              </v-chip-group>
+            </v-overlay>
           </vue-draggable-resizable>
         </div>
       </div>
@@ -138,15 +152,25 @@ import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class CompositionEditor extends Vue {
-  composition: RequestComposition = CompositionEditor.getCompositionOrDefault();
+  composition: RequestComposition = this.getCompositionOrDefault();
   showOptions = true;
+  showTags = false;
   gridSize = 5;
+  images: Map<string, ResponseImage> = new Map();
 
-  private static getCompositionOrDefault(): RequestComposition {
+  private getCompositionOrDefault(): RequestComposition {
     const value = localStorage.getItem(LocalStorageKey.Composition);
     if (value) {
       try {
-        return JSON.parse(value) as RequestComposition;
+        const composition = JSON.parse(value) as RequestComposition;
+        const imageIds = composition.images.map((image) => image.id).join(",");
+        this.$http
+          .get<ResponseImage[]>(`images/${imageIds}`)
+          .then((response) => response.data)
+          .then((images) =>
+            images.forEach((image) => this.images.set(image.id, image))
+          );
+        return composition;
       } catch (exception) {
         localStorage.removeItem(LocalStorageKey.Composition);
       }
@@ -190,6 +214,7 @@ export default class CompositionEditor extends Vue {
       width: image.width / ratio,
       height: image.height / ratio,
     });
+    this.images.set(image.id, image);
   }
 
   dragImage(index: number, x: number, y: number): void {
@@ -220,6 +245,15 @@ export default class CompositionEditor extends Vue {
 
   flipToBack(index: number): void {
     this.composition.images.unshift(...this.deleteImage(index));
+  }
+
+  getImageTags(id: string): string[] {
+    const image = this.images.get(id);
+    if (image) {
+      return image.tags;
+    } else {
+      return [];
+    }
   }
 
   downloadComposition(): void {

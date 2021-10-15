@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import Any, List, Optional
 
 import cloudinary
+import cloudinary.api
 import cloudinary.uploader
 from fastapi import APIRouter
 from fastapi.param_functions import Depends, Query
@@ -86,14 +87,35 @@ async def get_images(params: CursorParams = Depends(),
     total_count = response.get('total_count', 0)
     params.next = response.get('next_cursor')
     resources: List[dict[str, Any]] = response.get('resources', [])
-    images = [__get_response_images(resource) for resource in resources]
+    images = [__get_search_response_image(resource) for resource in resources]
     return CursorPage.create(images, total_count, params)
 
 
-def __get_response_images(resource: dict[str, Any]) -> ResponseImage:
+@router.get(root_path + '/{image_ids}', response_model=List[ResponseImage])
+async def get_image(image_ids: str) -> List[ResponseImage]:
+    response = cloudinary.api.resources(public_ids=image_ids.split(','),
+                                        context=True,
+                                        tags=True)
+    return [__get_admin_response_image(resource)
+            for resource in response.get('resources', [])]
+
+
+def __get_search_response_image(resource: dict[str, Any]) -> ResponseImage:
     context: dict[str, Any] = resource.get('context', {})
     return ResponseImage(id=resource.get('asset_id'),
                          name=resource.get('filename'),
+                         url=resource.get('secure_url'),
+                         width=resource.get('width'),
+                         height=resource.get('height'),
+                         tags=resource.get('tags'),
+                         author=context.get('Artist'),
+                         license=context.get('Copyright'))
+
+
+def __get_admin_response_image(resource: dict[str, Any]) -> ResponseImage:
+    context: dict[str, Any] = resource.get('context', {}).get('custom', {})
+    return ResponseImage(id=resource.get('asset_id'),
+                         name=resource.get('public_id'),
                          url=resource.get('secure_url'),
                          width=resource.get('width'),
                          height=resource.get('height'),

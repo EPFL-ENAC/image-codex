@@ -128,6 +128,49 @@
         }
       }
     },
+    "/images/{image_ids}": {
+      "get": {
+        "summary": "Get Image",
+        "operationId": "get_image_images__image_ids__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Image Ids",
+              "type": "string"
+            },
+            "name": "image_ids",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Image Images  Image Ids  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResponseImage"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/compositions": {
       "post": {
         "summary": "Create Composition",

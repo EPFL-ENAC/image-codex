@@ -331,6 +331,40 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Get Image
+         * @param {string} imageIds 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImageImagesImageIdsGet: async (imageIds: string, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'imageIds' is not null or undefined
+            assertParamExists('getImageImagesImageIdsGet', 'imageIds', imageIds)
+            const localVarPath = `/images/{image_ids}`
+                .replace(`{${"image_ids"}}`, encodeURIComponent(String(imageIds)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get Images
          * @param {Array<string>} [tags] 
          * @param {string} [author] 
@@ -443,6 +477,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get Image
+         * @param {string} imageIds 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImageImagesImageIdsGet(imageIds: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResponseImage>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getImageImagesImageIdsGet(imageIds, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get Images
          * @param {Array<string>} [tags] 
          * @param {string} [author] 
@@ -494,6 +539,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         createImageImagesPost(apiFile: ApiFile, options?: any): AxiosPromise<any> {
             return localVarFp.createImageImagesPost(apiFile, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get Image
+         * @param {string} imageIds 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImageImagesImageIdsGet(imageIds: string, options?: any): AxiosPromise<Array<ResponseImage>> {
+            return localVarFp.getImageImagesImageIdsGet(imageIds, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -549,6 +604,18 @@ export class DefaultApi extends BaseAPI {
      */
     public createImageImagesPost(apiFile: ApiFile, options?: any) {
         return DefaultApiFp(this.configuration).createImageImagesPost(apiFile, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get Image
+     * @param {string} imageIds 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getImageImagesImageIdsGet(imageIds: string, options?: any) {
+        return DefaultApiFp(this.configuration).getImageImagesImageIdsGet(imageIds, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
