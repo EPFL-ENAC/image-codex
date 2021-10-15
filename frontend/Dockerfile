@@ -19,5 +19,8 @@ RUN wget https://tequila.epfl.ch/download/2.0/tequila-apache-C-2.0.17.tgz -O teq
     cd ../../.. && \
     rm -rf tequila-apache.tgz tequila-2.0.17
 
+RUN mkdir -p /var/tequila && \
+    chmod 777 /var/tequila
+
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY --from=build-stage /app/dist /usr/local/apache2/htdocs/

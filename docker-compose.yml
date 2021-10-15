@@ -1,16 +1,26 @@
 services:
   reverse-proxy:
     image: traefik:v2.5
-    command: --api.insecure=true --providers.docker
+    command:
+      - "--providers.docker"
+      - "--providers.file.directory=/configuration/"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "443:443"
     restart: unless-stopped
     volumes:
+      - ./traefik.yaml:/configuration/traefik.yml
+      - ./secrets/certs/:/certs/
       - /var/run/docker.sock:/var/run/docker.sock
   frontend:
     build: ./frontend
     labels:
+      - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
     restart: unless-stopped
   backend:
@@ -22,6 +32,7 @@ services:
       CORS_ENABLED: "true"
       CLOUDINARY_FOLDER: image-codex-prod
     labels:
+      - "traefik.http.routers.backend.tls=true"
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend.middlewares=backend-stripprefix"
       - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/api"

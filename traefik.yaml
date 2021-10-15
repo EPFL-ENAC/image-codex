@@ -1,0 +1,6 @@
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/image-codex-enac.epfl.ch.crt.pem
+        keyFile: /certs/image-codex-enac.epfl.ch.key
