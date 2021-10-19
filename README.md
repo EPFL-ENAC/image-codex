@@ -1,10 +1,23 @@
 # Image Codex
 
-## Run
+## Installation
+
+Prerequisites:
+
+- [Make](https://www.gnu.org/software/make/)
+- [Poetry](https://python-poetry.org/)
+- [Node.js](https://nodejs.org/)
+- Copy `secrets` folder from `//enac1files.epfl.ch/common/IT4R/github/image-codex` to this repository root
 
 ```bash
-make run-frontend
+make install
+```
+
+## Run for development
+
+```bash
 make run-backend
+make run-frontend
 ```
 
 ## Generate
