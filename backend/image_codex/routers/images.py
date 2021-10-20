@@ -94,11 +94,14 @@ async def get_images(params: CursorParams = Depends(),
 
 @router.get(root_path + '/{image_ids}', response_model=List[ResponseImage])
 async def get_image(image_ids: str) -> List[ResponseImage]:
-    response = cloudinary.api.resources(public_ids=image_ids.split(','),
+    asset_ids = image_ids.split(',')
+    response = cloudinary.api.resources(max_results=500,
                                         context=True,
                                         tags=True)
+    resources = response.get('resources', [])
     return [__get_admin_response_image(resource)
-            for resource in response.get('resources', [])]
+            for resource in resources
+            if resource.get('asset_id') in asset_ids]
 
 
 def __get_search_response_image(resource: dict[str, Any]) -> ResponseImage:

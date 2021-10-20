@@ -1,5 +1,5 @@
 <template>
-  <v-card flat>
+  <v-card height="90vh" class="scrollable">
     <v-card-text>
       <tag-selector
         v-model="selectedTags"
@@ -46,6 +46,12 @@
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+.scrollable {
+  overflow-y: scroll;
+}
+</style>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";

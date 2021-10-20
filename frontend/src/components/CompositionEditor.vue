@@ -117,6 +117,7 @@
         <v-icon left>mdi-download</v-icon>
         Download
       </v-btn>
+      <v-btn text @click="resetSize">Reset size</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -152,6 +153,8 @@ import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class CompositionEditor extends Vue {
+  readonly defaultWidth = 1123;
+  readonly defaultHeight = 794;
   composition: RequestComposition = this.getCompositionOrDefault();
   showOptions = true;
   showTags = false;
@@ -177,8 +180,8 @@ export default class CompositionEditor extends Vue {
     }
     return {
       name: "",
-      width: 1123,
-      height: 794,
+      width: this.defaultWidth,
+      height: this.defaultHeight,
       images: [],
     };
   }
@@ -268,6 +271,11 @@ export default class CompositionEditor extends Vue {
           file.type
         );
       });
+  }
+
+  resetSize(): void {
+    this.composition.width = this.defaultWidth;
+    this.composition.height = this.defaultHeight;
   }
 }
 </script>
