@@ -4,12 +4,33 @@
     :items="categoryComboboxItems"
     label="Categories"
     :messages="messages"
-    chips
-    deletable-chips
+    clearable
     multiple
     @change="onChange"
-  ></v-combobox>
+  >
+    <template v-slot:selection="data">
+      <v-chip
+        :key="getValue(data.item)"
+        v-bind="data.attrs"
+        :input-value="data.selected"
+        :disabled="data.disabled"
+        close
+        @click:close="data.parent.selectItem(data.item)"
+      >
+        <span class="overflow" :title="getText(data.item)">
+          {{ getText(data.item) }}
+        </span>
+      </v-chip>
+    </template>
+  </v-combobox>
 </template>
+
+<style scoped>
+.overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 
 <script lang="ts">
 import { Vue, Component, Watch } from "vue-property-decorator";
@@ -29,13 +50,7 @@ export default class TagSelector extends Vue {
 
   get selectedTags(): string[] {
     return this.selectedCategories
-      .map((category) => {
-        if (typeof category === "string") {
-          return category;
-        } else {
-          return category.value;
-        }
-      })
+      .map(this.getValue)
       .flatMap((categories) => categories.split(tagSeparator))
       .filter(unique)
       .sort();
@@ -66,6 +81,25 @@ export default class TagSelector extends Vue {
   onChange(): void {
     this.$emit("input", this.selectedTags);
     this.$emit("change");
+  }
+
+  getText(category: ComboboxItem | string): string {
+    return this.getString(category, (c) => c.text);
+  }
+
+  getValue(category: ComboboxItem | string): string {
+    return this.getString(category, (c) => c.value);
+  }
+
+  private getString(
+    category: ComboboxItem | string,
+    getter: (item: ComboboxItem) => string
+  ): string {
+    if (typeof category === "string") {
+      return category;
+    } else {
+      return getter(category);
+    }
   }
 
   private getTreeItems(
