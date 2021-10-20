@@ -157,9 +157,13 @@ export default class ImageUpload extends Vue {
         };
         return this.$http.post("/images", apiFile);
       })
-    ).then(() => {
-      this.imagesUploading = false;
-    });
+    )
+      .catch((reason) => {
+        console.error(reason);
+      })
+      .finally(() => {
+        this.imagesUploading = false;
+      });
   }
 
   onClickAddToImage(): void {

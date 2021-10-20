@@ -12,7 +12,7 @@ from image_codex.models.api import ApiFile
 from image_codex.models.page import CursorPage, CursorParams
 from image_codex.utils.cloudinary import ROOT_FOLDER
 from image_codex.utils.pil import get_format
-from PIL import Image
+from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS
 from pydantic import BaseModel
 
@@ -35,6 +35,7 @@ class ResponseImage(BaseModel):
 async def create_image(body: ApiFile):
     with BytesIO(base64.b64decode(body.base64)) as file:
         with Image.open(file) as image:
+            image = ImageOps.exif_transpose(image)
             exif = image.getexif()
             exif_data = {TAGS.get(tag_id, tag_id):
                          __get_tag_value(exif, tag_id)
