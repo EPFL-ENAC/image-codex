@@ -1,3 +1,7 @@
+"""
+Entrypoint for FastAPI application
+https://fastapi.tiangolo.com/tutorial/bigger-applications/
+"""
 import configparser
 import os
 
@@ -6,7 +10,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination.api import add_pagination
 
-from image_codex.routers import compositions, images, root
+from image_codex import __name__, __version__
+from image_codex.routers import compositions, images, root, tags
+
+#######################
+# Configuration Setup #
+#######################
 
 
 class EnvInterpolation(configparser.BasicInterpolation):
@@ -18,10 +27,33 @@ class EnvInterpolation(configparser.BasicInterpolation):
 config = configparser.ConfigParser(interpolation=EnvInterpolation())
 config.read('image_codex/config.ini')
 
-# fast_api
+
+#########################
+# FastAPI Configuration #
+#########################
+
+
 fast_api_config = config['fast_api']
 
-app = FastAPI(root_path=fast_api_config.get('root_path', ''))
+app = FastAPI(
+    title=__name__,
+    version=__version__,
+    root_path=fast_api_config.get('root_path', ''),
+    openapi_tags=[
+        {
+            "name": "compositions",
+            "description": "Manage image compositions",
+        },
+        {
+            "name": "images",
+            "description": "Manage images",
+        },
+        {
+            "name": "tags",
+            "description": "Manage tags",
+        },
+    ],
+)
 if not fast_api_config.getboolean('cors_enabled'):
     print('cors disabled')
     app.add_middleware(
@@ -34,12 +66,18 @@ if not fast_api_config.getboolean('cors_enabled'):
 else:
     print('cors enabled')
 app.include_router(root.router)
-app.include_router(images.router)
 app.include_router(compositions.router)
+app.include_router(images.router)
+app.include_router(tags.router)
 
 add_pagination(app)
 
-# cloudinary
+
+############################
+# Cloudinary Configuration #
+############################
+
+
 cloudinary_config = config['cloudinary']
 
 cloudinary.config(

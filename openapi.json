@@ -21,10 +21,68 @@
         }
       }
     },
-    "/images": {
+    "/compositions/": {
+      "post": {
+        "tags": [
+          "compositions"
+        ],
+        "summary": "Create Composition",
+        "description": "Create an image composition and return it in the given type",
+        "operationId": "create_composition_compositions__post",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Mimetype",
+              "type": "string",
+              "default": "application/pdf"
+            },
+            "name": "mimetype",
+            "in": "query"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Composition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/images/": {
       "get": {
+        "tags": [
+          "images"
+        ],
         "summary": "Get Images",
-        "operationId": "get_images_images_get",
+        "description": "Get images with filters:\n- **tags**: contains all given tags\n- **author**: has given author",
+        "operationId": "get_images_images__get",
         "parameters": [
           {
             "required": false,
@@ -76,7 +134,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CursorPage_ResponseImage_"
+                  "$ref": "#/components/schemas/CursorPage_TaggedImage_"
                 }
               }
             }
@@ -94,8 +152,12 @@
         }
       },
       "post": {
+        "tags": [
+          "images"
+        ],
         "summary": "Create Image",
-        "operationId": "create_image_images_post",
+        "description": "Upload a new image to the database",
+        "operationId": "create_image_images__post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -130,7 +192,11 @@
     },
     "/images/{image_ids}": {
       "get": {
+        "tags": [
+          "images"
+        ],
         "summary": "Get Image",
+        "description": "Get images with given ids",
         "operationId": "get_image_images__image_ids__get",
         "parameters": [
           {
@@ -152,7 +218,7 @@
                   "title": "Response Get Image Images  Image Ids  Get",
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ResponseImage"
+                    "$ref": "#/components/schemas/TaggedImage"
                   }
                 }
               }
@@ -171,37 +237,25 @@
         }
       }
     },
-    "/compositions": {
-      "post": {
-        "summary": "Create Composition",
-        "operationId": "create_composition_compositions_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RequestComposition"
-              }
-            }
-          },
-          "required": true
-        },
+    "/tags/": {
+      "get": {
+        "tags": [
+          "tags"
+        ],
+        "summary": "Get Tags",
+        "description": "Get all tags",
+        "operationId": "get_tags_tags__get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFile"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "title": "Response Get Tags Tags  Get",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -271,53 +325,8 @@
           }
         }
       },
-      "CursorPage_ResponseImage_": {
-        "title": "CursorPage[ResponseImage]",
-        "required": [
-          "items",
-          "total",
-          "size"
-        ],
-        "type": "object",
-        "properties": {
-          "items": {
-            "title": "Items",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ResponseImage"
-            }
-          },
-          "total": {
-            "title": "Total",
-            "minimum": 0.0,
-            "type": "integer"
-          },
-          "next": {
-            "title": "Next",
-            "type": "string"
-          },
-          "size": {
-            "title": "Size",
-            "minimum": 1.0,
-            "type": "integer"
-          }
-        }
-      },
-      "HTTPValidationError": {
-        "title": "HTTPValidationError",
-        "type": "object",
-        "properties": {
-          "detail": {
-            "title": "Detail",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            }
-          }
-        }
-      },
-      "RequestComposition": {
-        "title": "RequestComposition",
+      "Composition": {
+        "title": "Composition",
         "required": [
           "name",
           "width",
@@ -359,8 +368,53 @@
           }
         }
       },
-      "ResponseImage": {
-        "title": "ResponseImage",
+      "CursorPage_TaggedImage_": {
+        "title": "CursorPage[TaggedImage]",
+        "required": [
+          "items",
+          "total",
+          "size"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "title": "Items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaggedImage"
+            }
+          },
+          "total": {
+            "title": "Total",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "next": {
+            "title": "Next",
+            "type": "string"
+          },
+          "size": {
+            "title": "Size",
+            "minimum": 1.0,
+            "type": "integer"
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "TaggedImage": {
+        "title": "TaggedImage",
         "required": [
           "id",
           "name",

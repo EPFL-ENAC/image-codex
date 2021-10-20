@@ -1,16 +1,12 @@
-install: install-backend install-frontend
-
-install-backend:
-	cd backend; poetry install
-
-install-frontend:
-	cd frontend; npm install
+install:
+	$(MAKE) -C backend install
+	$(MAKE) -C frontend install
 
 run-backend:
-	cd backend; poetry run dotenv run uvicorn image_codex.main:app --reload
+	$(MAKE) -C backend run
 
 run-frontend:
-	npm --prefix frontend run serve
+	$(MAKE) -C frontend run
 
 deploy-local:
 	docker-compose up --build --remove-orphans

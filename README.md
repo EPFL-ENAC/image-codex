@@ -1,6 +1,10 @@
 # Image Codex
 
-## Installation
+https://image-codex-enac.epfl.ch/
+
+## Development
+
+### Installation
 
 Prerequisites:
 
@@ -13,39 +17,49 @@ Prerequisites:
 make install
 ```
 
-## Run for development
+### Run for development
+
+#### CLI
 
 ```bash
 make run-backend
 make run-frontend
 ```
 
-## Generate
+#### Visual Studio Code
 
-Folder frontend/src/backend is generated from backend API.
+Some run configurations are in `.vscode`: https://code.visualstudio.com/docs/editor/debugging
+
+## Generate API for frontend
+
+Folder frontend/src/backend is generated from backend API. It should be updated when the backend api changes.
 
 ```bash
 # update generated files (requires Java installed)
 make generate-api
 ```
 
-## Deploy
+## Deployment
 
-### Locally
+### Locally with Docker Compose
 
 ```bash
-docker-compose up --build --remove-orphans
+make deploy-local
 ```
 
 ### Server
 
-[Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+Deploy on https://enacvm0062.xaas.epfl.ch/ (alias https://image-codex-enac.epfl.ch/)
+
+Prerequisites:
+
+- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
 ```bash
-# Install
+# Install on new server
 ansible-galaxy install -r ansible/requirements.yml
 ansible-playbook ansible/install.yml -i ansible/inventory.ini
 
 # Deploy
-ansible-playbook ansible/deploy.yml -i ansible/inventory.ini
+make deploy-server
 ```

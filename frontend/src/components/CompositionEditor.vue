@@ -142,12 +142,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {
-  ApiFile,
-  ComposedImage,
-  RequestComposition,
-  ResponseImage,
-} from "@/backend";
+import { ApiFile, ComposedImage, Composition, TaggedImage } from "@/backend";
 import download from "downloadjs";
 import { LocalStorageKey } from "@/utils/contants";
 
@@ -155,20 +150,20 @@ import { LocalStorageKey } from "@/utils/contants";
 export default class CompositionEditor extends Vue {
   readonly defaultWidth = 1123;
   readonly defaultHeight = 794;
-  composition: RequestComposition = this.getCompositionOrDefault();
+  composition: Composition = this.getCompositionOrDefault();
   showOptions = true;
   showTags = false;
   gridSize = 5;
-  images: Map<string, ResponseImage> = new Map();
+  images: Map<string, TaggedImage> = new Map();
 
-  private getCompositionOrDefault(): RequestComposition {
+  private getCompositionOrDefault(): Composition {
     const value = localStorage.getItem(LocalStorageKey.Composition);
     if (value) {
       try {
-        const composition = JSON.parse(value) as RequestComposition;
+        const composition = JSON.parse(value) as Composition;
         const imageIds = composition.images.map((image) => image.id).join(",");
         this.$http
-          .get<ResponseImage[]>(`images/${imageIds}`)
+          .get<TaggedImage[]>(`images/${imageIds}`)
           .then((response) => response.data)
           .then((images) =>
             images.forEach((image) => this.images.set(image.id, image))
@@ -206,7 +201,7 @@ export default class CompositionEditor extends Vue {
     );
   }
 
-  public addImage(image: ResponseImage): void {
+  public addImage(image: TaggedImage): void {
     const maxInitSize = 200;
     const ratio = Math.max(image.width, image.height) / maxInitSize;
     this.composition.images.push({

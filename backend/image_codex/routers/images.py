@@ -9,30 +9,24 @@ from fastapi import APIRouter
 from fastapi.param_functions import Depends, Query
 from fastapi_pagination.bases import AbstractPage
 from image_codex.models.api import ApiFile
+from image_codex.models.images import TaggedImage
 from image_codex.models.page import CursorPage, CursorParams
 from image_codex.utils.cloudinary import ROOT_FOLDER
-from image_codex.utils.pil import get_format
+from image_codex.utils.pil import get_pil_format
 from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS
-from pydantic import BaseModel
 
-router = APIRouter()
-root_path = '/images'
-
-
-class ResponseImage(BaseModel):
-    id: str
-    name: str
-    url: str
-    width: int
-    height: int
-    tags: List[str]
-    author: str
-    license: str
+router = APIRouter(
+    prefix='/images',
+    tags=['images']
+)
 
 
-@router.post(root_path)
+@router.post('/')
 async def create_image(body: ApiFile):
+    """
+    Upload a new image to the database
+    """
     with BytesIO(base64.b64decode(body.base64)) as file:
         with Image.open(file) as image:
             image = ImageOps.exif_transpose(image)
@@ -50,7 +44,7 @@ async def create_image(body: ApiFile):
                 'Copyright': copyright,
             }
             with BytesIO() as new_file:
-                image.save(new_file, get_format(body.type))
+                image.save(new_file, get_pil_format(body.type))
                 new_file.seek(0)
                 print(f'uploading {image.format} file to {ROOT_FOLDER}')
                 return cloudinary.uploader.upload(file=new_file,
@@ -59,19 +53,16 @@ async def create_image(body: ApiFile):
                                                   context=context)
 
 
-def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:
-    value = exif.get(tag_id)
-    if isinstance(value, bytes):
-        return value.decode()
-    else:
-        return str(value)
-
-
-@router.get(root_path, response_model=CursorPage[ResponseImage])
+@router.get('/', response_model=CursorPage[TaggedImage])
 async def get_images(params: CursorParams = Depends(),
                      tags: List[str] = Query([]),
                      author: Optional[str] = Query(None),
-                     ) -> AbstractPage[ResponseImage]:
+                     ) -> AbstractPage[TaggedImage]:
+    """
+    Get images with filters:
+    - **tags**: contains all given tags
+    - **author**: has given author
+    """
     folder_expressions = [f'folder="{ROOT_FOLDER}"']
     tag_expressions = [f'tags="{tag}"' for tag in tags]
     author_expressions = [f'context.Artist="{author}"'] if author else []
@@ -92,8 +83,11 @@ async def get_images(params: CursorParams = Depends(),
     return CursorPage.create(images, total_count, params)
 
 
-@router.get(root_path + '/{image_ids}', response_model=List[ResponseImage])
-async def get_image(image_ids: str) -> List[ResponseImage]:
+@router.get('/{image_ids}', response_model=List[TaggedImage])
+async def get_image(image_ids: str) -> List[TaggedImage]:
+    """
+    Get images with given ids
+    """
     asset_ids = image_ids.split(',')
     response = cloudinary.api.resources(max_results=500,
                                         context=True,
@@ -104,25 +98,33 @@ async def get_image(image_ids: str) -> List[ResponseImage]:
             if resource.get('asset_id') in asset_ids]
 
 
-def __get_search_response_image(resource: dict[str, Any]) -> ResponseImage:
+def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:
+    value = exif.get(tag_id)
+    if isinstance(value, bytes):
+        return value.decode()
+    else:
+        return str(value)
+
+
+def __get_search_response_image(resource: dict[str, Any]) -> TaggedImage:
     context: dict[str, Any] = resource.get('context', {})
-    return ResponseImage(id=resource.get('asset_id'),
-                         name=resource.get('filename'),
-                         url=resource.get('secure_url'),
-                         width=resource.get('width'),
-                         height=resource.get('height'),
-                         tags=resource.get('tags'),
-                         author=context.get('Artist'),
-                         license=context.get('Copyright'))
+    return TaggedImage(id=resource.get('asset_id'),
+                       name=resource.get('filename'),
+                       url=resource.get('secure_url'),
+                       width=resource.get('width'),
+                       height=resource.get('height'),
+                       tags=resource.get('tags'),
+                       author=context.get('Artist'),
+                       license=context.get('Copyright'))
 
 
-def __get_admin_response_image(resource: dict[str, Any]) -> ResponseImage:
+def __get_admin_response_image(resource: dict[str, Any]) -> TaggedImage:
     context: dict[str, Any] = resource.get('context', {}).get('custom', {})
-    return ResponseImage(id=resource.get('asset_id'),
-                         name=resource.get('public_id'),
-                         url=resource.get('secure_url'),
-                         width=resource.get('width'),
-                         height=resource.get('height'),
-                         tags=resource.get('tags'),
-                         author=context.get('Artist'),
-                         license=context.get('Copyright'))
+    return TaggedImage(id=resource.get('asset_id'),
+                       name=resource.get('public_id'),
+                       url=resource.get('secure_url'),
+                       width=resource.get('width'),
+                       height=resource.get('height'),
+                       tags=resource.get('tags'),
+                       author=context.get('Artist'),
+                       license=context.get('Copyright'))

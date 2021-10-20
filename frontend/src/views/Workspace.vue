@@ -14,7 +14,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import ImageBrowser from "@/components/ImageBrowser.vue";
 import CompositionEditor from "@/components/CompositionEditor.vue";
-import { ResponseImage } from "@/backend";
+import { TaggedImage } from "@/backend";
 
 @Component({
   components: {
@@ -23,7 +23,7 @@ import { ResponseImage } from "@/backend";
   },
 })
 export default class Workspace extends Vue {
-  addImage(image: ResponseImage): void {
+  addImage(image: TaggedImage): void {
     const editor = this.$refs.editor as CompositionEditor;
     editor.addImage(image);
   }
