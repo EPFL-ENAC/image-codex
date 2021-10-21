@@ -32,6 +32,9 @@
               <v-btn color="primary" icon @click="$emit('add', item)">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
+              <v-btn icon @click="deleteImage(item.id)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -44,6 +47,7 @@
         </v-col>
       </v-row>
     </v-card-text>
+    <confirm-dialog ref="confirmDialog"></confirm-dialog>
   </v-card>
 </template>
 
@@ -57,10 +61,12 @@
 import { Vue, Component } from "vue-property-decorator";
 import { paramsSerializer } from "@/utils/functions";
 import TagSelector from "./TagSelector.vue";
+import ConfirmDialog from "./ConfirmDialog.vue";
 import { CursorPageTaggedImage, TaggedImage } from "@/backend";
 
 @Component({
   components: {
+    ConfirmDialog,
     TagSelector,
   },
 })
@@ -110,6 +116,16 @@ export default class ImageBrowser extends Vue {
 
   getNextImages(): void {
     this.updateItems((images) => this.images.push(...images));
+  }
+
+  deleteImage(id: string): void {
+    const confirmDialog: ConfirmDialog = this.$refs
+      .confirmDialog as ConfirmDialog;
+    confirmDialog.open(`image ${id} will be deleted`).then((confirmed) => {
+      if (confirmed) {
+        this.$http.delete(`images/${id}`).then(() => this.initializeImages());
+      }
+    });
   }
 }
 </script>

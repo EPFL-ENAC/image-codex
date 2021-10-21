@@ -54,10 +54,10 @@ async def create_image(body: ApiFile):
 
 
 @router.get('/', response_model=CursorPage[TaggedImage])
-async def get_images(params: CursorParams = Depends(),
-                     tags: List[str] = Query([]),
-                     author: Optional[str] = Query(None),
-                     ) -> AbstractPage[TaggedImage]:
+async def get_all_images(params: CursorParams = Depends(),
+                         tags: List[str] = Query([]),
+                         author: Optional[str] = Query(None),
+                         ) -> AbstractPage[TaggedImage]:
     """
     Get images with filters:
     - **tags**: contains all given tags
@@ -84,9 +84,9 @@ async def get_images(params: CursorParams = Depends(),
 
 
 @router.get('/{image_ids}', response_model=List[TaggedImage])
-async def get_image(image_ids: str) -> List[TaggedImage]:
+async def get_images(image_ids: str) -> List[TaggedImage]:
     """
-    Get images with given ids
+    Get images with given comma-separated ids
     """
     public_ids = [__get_public_id(id) for id in image_ids.split(',')]
     resources = [cloudinary.api.resource(public_id=public_id,
@@ -95,6 +95,19 @@ async def get_image(image_ids: str) -> List[TaggedImage]:
                  for public_id in public_ids]
     return [__get_admin_response_image(resource)
             for resource in resources]
+
+
+@router.delete('/{image_ids}')
+async def delete_images(image_ids: str) -> List[str]:
+    """
+    Delete images with given comma-separated ids
+    """
+    public_ids = [__get_public_id(id) for id in image_ids.split(',')]
+    response = cloudinary.api.delete_resources(public_ids=public_ids)
+    return [key
+            for key, value
+            in response.get('deleted', {}).items()
+            if value == 'deleted']
 
 
 def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:

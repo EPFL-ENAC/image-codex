@@ -507,15 +507,15 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * Get images with given ids
-         * @summary Get Image
+         * Delete images with given comma-separated ids
+         * @summary Delete Images
          * @param {string} imageIds 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getImageImagesImageIdsGet: async (imageIds: string, options: any = {}): Promise<RequestArgs> => {
+        deleteImagesImagesImageIdsDelete: async (imageIds: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'imageIds' is not null or undefined
-            assertParamExists('getImageImagesImageIdsGet', 'imageIds', imageIds)
+            assertParamExists('deleteImagesImagesImageIdsDelete', 'imageIds', imageIds)
             const localVarPath = `/images/{image_ids}`
                 .replace(`{${"image_ids"}}`, encodeURIComponent(String(imageIds)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -525,7 +525,7 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -542,7 +542,7 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * Get images with filters: - **tags**: contains all given tags - **author**: has given author
-         * @summary Get Images
+         * @summary Get All Images
          * @param {Array<string>} [tags] 
          * @param {string} [author] 
          * @param {string} [next] 
@@ -550,7 +550,7 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getImagesImagesGet: async (tags?: Array<string>, author?: string, next?: string, size?: number, options: any = {}): Promise<RequestArgs> => {
+        getAllImagesImagesGet: async (tags?: Array<string>, author?: string, next?: string, size?: number, options: any = {}): Promise<RequestArgs> => {
             const localVarPath = `/images/`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -590,6 +590,40 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Get images with given comma-separated ids
+         * @summary Get Images
+         * @param {string} imageIds 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImagesImagesImageIdsGet: async (imageIds: string, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'imageIds' is not null or undefined
+            assertParamExists('getImagesImagesImageIdsGet', 'imageIds', imageIds)
+            const localVarPath = `/images/{image_ids}`
+                .replace(`{${"image_ids"}}`, encodeURIComponent(String(imageIds)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -612,19 +646,19 @@ export const ImagesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Get images with given ids
-         * @summary Get Image
+         * Delete images with given comma-separated ids
+         * @summary Delete Images
          * @param {string} imageIds 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getImageImagesImageIdsGet(imageIds: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaggedImage>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getImageImagesImageIdsGet(imageIds, options);
+        async deleteImagesImagesImageIdsDelete(imageIds: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteImagesImagesImageIdsDelete(imageIds, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Get images with filters: - **tags**: contains all given tags - **author**: has given author
-         * @summary Get Images
+         * @summary Get All Images
          * @param {Array<string>} [tags] 
          * @param {string} [author] 
          * @param {string} [next] 
@@ -632,8 +666,19 @@ export const ImagesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CursorPageTaggedImage>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getImagesImagesGet(tags, author, next, size, options);
+        async getAllImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CursorPageTaggedImage>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAllImagesImagesGet(tags, author, next, size, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Get images with given comma-separated ids
+         * @summary Get Images
+         * @param {string} imageIds 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImagesImagesImageIdsGet(imageIds: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaggedImage>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getImagesImagesImageIdsGet(imageIds, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -657,18 +702,18 @@ export const ImagesApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.createImageImagesPost(apiFile, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get images with given ids
-         * @summary Get Image
+         * Delete images with given comma-separated ids
+         * @summary Delete Images
          * @param {string} imageIds 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getImageImagesImageIdsGet(imageIds: string, options?: any): AxiosPromise<Array<TaggedImage>> {
-            return localVarFp.getImageImagesImageIdsGet(imageIds, options).then((request) => request(axios, basePath));
+        deleteImagesImagesImageIdsDelete(imageIds: string, options?: any): AxiosPromise<any> {
+            return localVarFp.deleteImagesImagesImageIdsDelete(imageIds, options).then((request) => request(axios, basePath));
         },
         /**
          * Get images with filters: - **tags**: contains all given tags - **author**: has given author
-         * @summary Get Images
+         * @summary Get All Images
          * @param {Array<string>} [tags] 
          * @param {string} [author] 
          * @param {string} [next] 
@@ -676,8 +721,18 @@ export const ImagesApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any): AxiosPromise<CursorPageTaggedImage> {
-            return localVarFp.getImagesImagesGet(tags, author, next, size, options).then((request) => request(axios, basePath));
+        getAllImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any): AxiosPromise<CursorPageTaggedImage> {
+            return localVarFp.getAllImagesImagesGet(tags, author, next, size, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get images with given comma-separated ids
+         * @summary Get Images
+         * @param {string} imageIds 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImagesImagesImageIdsGet(imageIds: string, options?: any): AxiosPromise<Array<TaggedImage>> {
+            return localVarFp.getImagesImagesImageIdsGet(imageIds, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -702,20 +757,20 @@ export class ImagesApi extends BaseAPI {
     }
 
     /**
-     * Get images with given ids
-     * @summary Get Image
+     * Delete images with given comma-separated ids
+     * @summary Delete Images
      * @param {string} imageIds 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ImagesApi
      */
-    public getImageImagesImageIdsGet(imageIds: string, options?: any) {
-        return ImagesApiFp(this.configuration).getImageImagesImageIdsGet(imageIds, options).then((request) => request(this.axios, this.basePath));
+    public deleteImagesImagesImageIdsDelete(imageIds: string, options?: any) {
+        return ImagesApiFp(this.configuration).deleteImagesImagesImageIdsDelete(imageIds, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Get images with filters: - **tags**: contains all given tags - **author**: has given author
-     * @summary Get Images
+     * @summary Get All Images
      * @param {Array<string>} [tags] 
      * @param {string} [author] 
      * @param {string} [next] 
@@ -724,8 +779,20 @@ export class ImagesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ImagesApi
      */
-    public getImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any) {
-        return ImagesApiFp(this.configuration).getImagesImagesGet(tags, author, next, size, options).then((request) => request(this.axios, this.basePath));
+    public getAllImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any) {
+        return ImagesApiFp(this.configuration).getAllImagesImagesGet(tags, author, next, size, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get images with given comma-separated ids
+     * @summary Get Images
+     * @param {string} imageIds 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ImagesApi
+     */
+    public getImagesImagesImageIdsGet(imageIds: string, options?: any) {
+        return ImagesApiFp(this.configuration).getImagesImagesImageIdsGet(imageIds, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

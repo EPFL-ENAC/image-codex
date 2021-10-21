@@ -80,9 +80,9 @@
         "tags": [
           "images"
         ],
-        "summary": "Get Images",
+        "summary": "Get All Images",
         "description": "Get images with filters:\n- **tags**: contains all given tags\n- **author**: has given author",
-        "operationId": "get_images_images__get",
+        "operationId": "get_all_images_images__get",
         "parameters": [
           {
             "required": false,
@@ -195,9 +195,9 @@
         "tags": [
           "images"
         ],
-        "summary": "Get Image",
-        "description": "Get images with given ids",
-        "operationId": "get_image_images__image_ids__get",
+        "summary": "Get Images",
+        "description": "Get images with given comma-separated ids",
+        "operationId": "get_images_images__image_ids__get",
         "parameters": [
           {
             "required": true,
@@ -215,12 +215,51 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Get Image Images  Image Ids  Get",
+                  "title": "Response Get Images Images  Image Ids  Get",
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/TaggedImage"
                   }
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "images"
+        ],
+        "summary": "Delete Images",
+        "description": "Delete images with given comma-separated ids",
+        "operationId": "delete_images_images__image_ids__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Image Ids",
+              "type": "string"
+            },
+            "name": "image_ids",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
