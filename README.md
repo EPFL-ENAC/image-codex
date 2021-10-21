@@ -23,7 +23,10 @@ make install
 
 ```bash
 make run-backend
+# http://127.0.0.1:8080
+
 make run-frontend
+# http://127.0.0.1:8000
 ```
 
 #### Visual Studio Code

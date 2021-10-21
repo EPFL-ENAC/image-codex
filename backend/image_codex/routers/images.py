@@ -88,14 +88,13 @@ async def get_image(image_ids: str) -> List[TaggedImage]:
     """
     Get images with given ids
     """
-    asset_ids = image_ids.split(',')
-    response = cloudinary.api.resources(max_results=500,
-                                        context=True,
-                                        tags=True)
-    resources = response.get('resources', [])
+    public_ids = [__get_public_id(id) for id in image_ids.split(',')]
+    resources = [cloudinary.api.resource(public_id=public_id,
+                                         context=True,
+                                         tags=True)
+                 for public_id in public_ids]
     return [__get_admin_response_image(resource)
-            for resource in resources
-            if resource.get('asset_id') in asset_ids]
+            for resource in resources]
 
 
 def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:
@@ -107,8 +106,12 @@ def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:
 
 
 def __get_search_response_image(resource: dict[str, Any]) -> TaggedImage:
+    """
+    https://cloudinary.com/documentation/search_api
+    """
     context: dict[str, Any] = resource.get('context', {})
-    return TaggedImage(id=resource.get('asset_id'),
+    id = __get_id(resource)
+    return TaggedImage(id=id,
                        name=resource.get('filename'),
                        url=resource.get('secure_url'),
                        width=resource.get('width'),
@@ -119,12 +122,25 @@ def __get_search_response_image(resource: dict[str, Any]) -> TaggedImage:
 
 
 def __get_admin_response_image(resource: dict[str, Any]) -> TaggedImage:
+    """
+    https://cloudinary.com/documentation/admin_api
+    """
     context: dict[str, Any] = resource.get('context', {}).get('custom', {})
-    return TaggedImage(id=resource.get('asset_id'),
-                       name=resource.get('public_id'),
+    id = __get_id(resource)
+    return TaggedImage(id=id,
+                       name=id,
                        url=resource.get('secure_url'),
                        width=resource.get('width'),
                        height=resource.get('height'),
                        tags=resource.get('tags'),
                        author=context.get('Artist'),
                        license=context.get('Copyright'))
+
+
+def __get_id(resource: dict[str, Any]) -> str:
+    public_id: str = resource.get('public_id', '')
+    return public_id.removeprefix(CLOUDINARY_FOLDER + '/')
+
+
+def __get_public_id(id: str) -> str:
+    return f'{CLOUDINARY_FOLDER}/{id}'
