@@ -1,12 +1,14 @@
+"""
+Handle /compositions requests
+"""
 import base64
 from io import BytesIO
 
 import requests
 from fastapi import APIRouter
 from fastapi.param_functions import Query
-from image_codex.models.api import ApiFile
-from image_codex.models.compositions import Composition
-from image_codex.utils.pil import get_pil_format
+from image_codex.models import ApiFile, Composition
+from image_codex.utils import get_pil_format
 from PIL import Image
 
 router = APIRouter(
@@ -16,8 +18,9 @@ router = APIRouter(
 
 
 @router.post('/', response_model=ApiFile)
-async def create_composition(composition: Composition,
-                             mimetype: str = Query('application/pdf')) -> ApiFile:
+async def create_composition(
+        composition: Composition,
+        mimetype: str = Query('application/pdf')) -> ApiFile:
     """
     Create an image composition and return it in the given type
     """

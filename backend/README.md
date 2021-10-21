@@ -2,7 +2,9 @@
 
 Backend for Image Codex: https://image-codex-enac.epfl.ch/api/docs
 
-Created by Poetry and follows its files structure: https://python-poetry.org/docs/basic-usage/#project-setup
+Module `image_codex` is created by Poetry and follows its files structure: https://python-poetry.org/docs/basic-usage/#project-setup
+
+Entrypoint: `image_codex.main`
 
 ## Commands
 

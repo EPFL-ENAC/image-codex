@@ -1,3 +1,6 @@
+"""
+Handle / requests
+"""
 from fastapi import APIRouter
 from image_codex import __name__, __version__
 

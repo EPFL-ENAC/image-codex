@@ -4,8 +4,7 @@ from typing import Generic, Optional, Sequence, TypeVar
 
 from fastapi.param_functions import Query
 from fastapi_pagination.bases import AbstractParams, BasePage, RawParams
-from pydantic.main import BaseModel
-from pydantic.types import conint
+from pydantic import BaseModel, conint
 
 T = TypeVar("T")
 

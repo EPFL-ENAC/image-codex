@@ -1,3 +1,6 @@
+"""
+Handle /tags requests
+"""
 from typing import List
 
 import cloudinary.api

@@ -1,3 +1,6 @@
+"""
+Handle /images requests
+"""
 import base64
 from io import BytesIO
 from typing import Any, List, Optional
@@ -8,11 +11,8 @@ import cloudinary.uploader
 from fastapi import APIRouter
 from fastapi.param_functions import Depends, Query
 from fastapi_pagination.bases import AbstractPage
-from image_codex.models.api import ApiFile
-from image_codex.models.images import TaggedImage
-from image_codex.models.page import CursorPage, CursorParams
-from image_codex.utils.cloudinary import ROOT_FOLDER
-from image_codex.utils.pil import get_pil_format
+from image_codex.models import ApiFile, CursorPage, CursorParams, TaggedImage
+from image_codex.utils import CLOUDINARY_FOLDER, get_pil_format
 from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS
 
@@ -46,9 +46,9 @@ async def create_image(body: ApiFile):
             with BytesIO() as new_file:
                 image.save(new_file, get_pil_format(body.type))
                 new_file.seek(0)
-                print(f'uploading {image.format} file to {ROOT_FOLDER}')
+                print(f'uploading {image.format} file to {CLOUDINARY_FOLDER}')
                 return cloudinary.uploader.upload(file=new_file,
-                                                  folder=ROOT_FOLDER,
+                                                  folder=CLOUDINARY_FOLDER,
                                                   tags=tags,
                                                   context=context)
 
@@ -63,7 +63,7 @@ async def get_images(params: CursorParams = Depends(),
     - **tags**: contains all given tags
     - **author**: has given author
     """
-    folder_expressions = [f'folder="{ROOT_FOLDER}"']
+    folder_expressions = [f'folder="{CLOUDINARY_FOLDER}"']
     tag_expressions = [f'tags="{tag}"' for tag in tags]
     author_expressions = [f'context.Artist="{author}"'] if author else []
     expressions = folder_expressions + tag_expressions + author_expressions

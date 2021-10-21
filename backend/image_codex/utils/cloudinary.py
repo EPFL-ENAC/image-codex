@@ -1,3 +1,3 @@
 import os
 
-ROOT_FOLDER = os.getenv('CLOUDINARY_FOLDER', 'image-codex')
+CLOUDINARY_FOLDER = os.getenv('CLOUDINARY_FOLDER', 'image-codex')
