@@ -168,10 +168,11 @@ export default class ImageUpload extends Vue {
 
   onClickAddToImage(): void {
     const tags = this.tags;
-    this.images.forEach((image) => {
+    this.images = this.images.map((image) => {
       image.newAuthor = this.$store.state.username;
       image.newCopyright = this.license;
       image.addTags(tags);
+      return image;
     });
     const imageItems: Vue[] = this.$refs.imageItems as Vue[];
     imageItems.forEach((item) => {
