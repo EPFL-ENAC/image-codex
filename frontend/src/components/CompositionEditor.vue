@@ -29,8 +29,9 @@
         </v-col>
         <v-col>
           <v-switch
-            v-model="showOptions"
-            label="Show Options"
+            v-model="showActions"
+            label="Show Actions"
+            title="Show available actions on each image"
             hide-details
           ></v-switch>
         </v-col>
@@ -79,7 +80,7 @@
           >
             <v-img :src="image.url" contain></v-img>
             <v-speed-dial
-              v-if="showOptions"
+              v-if="showActions"
               fixed
               left
               open-on-hover
@@ -91,13 +92,23 @@
                   <v-icon>mdi-dots-horizontal</v-icon>
                 </v-btn>
               </template>
-              <v-btn fab x-small @click="deleteImage(index)">
+              <v-btn title="Delete" fab x-small @click="deleteImage(index)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
-              <v-btn fab x-small @click="flipToFront(index)">
+              <v-btn
+                title="Move to front"
+                fab
+                x-small
+                @click="flipToFront(index)"
+              >
                 <v-icon>mdi-flip-to-front</v-icon>
               </v-btn>
-              <v-btn fab x-small @click="flipToBack(index)">
+              <v-btn
+                title="Move to back"
+                fab
+                x-small
+                @click="flipToBack(index)"
+              >
                 <v-icon>mdi-flip-to-back</v-icon>
               </v-btn>
             </v-speed-dial>
@@ -148,10 +159,10 @@ import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class CompositionEditor extends Vue {
-  readonly defaultWidth = 1123;
-  readonly defaultHeight = 794;
+  static readonly defaultWidth = 1123;
+  static readonly defaultHeight = 794;
   composition: Composition = this.getCompositionOrDefault();
-  showOptions = true;
+  showActions = true;
   showTags = false;
   gridSize = 5;
   images: Map<string, TaggedImage> = new Map();
@@ -168,6 +179,12 @@ export default class CompositionEditor extends Vue {
           .then((images) =>
             images.forEach((image) => this.images.set(image.id, image))
           );
+        if (!composition.width || composition.width < 0) {
+          composition.width = CompositionEditor.defaultWidth;
+        }
+        if (!composition.height || composition.height < 0) {
+          composition.height = CompositionEditor.defaultHeight;
+        }
         return composition;
       } catch (exception) {
         localStorage.removeItem(LocalStorageKey.Composition);
@@ -175,8 +192,8 @@ export default class CompositionEditor extends Vue {
     }
     return {
       name: "",
-      width: this.defaultWidth,
-      height: this.defaultHeight,
+      width: CompositionEditor.defaultWidth,
+      height: CompositionEditor.defaultHeight,
       images: [],
     };
   }
@@ -269,8 +286,8 @@ export default class CompositionEditor extends Vue {
   }
 
   resetSize(): void {
-    this.composition.width = this.defaultWidth;
-    this.composition.height = this.defaultHeight;
+    this.composition.width = CompositionEditor.defaultWidth;
+    this.composition.height = CompositionEditor.defaultHeight;
   }
 }
 </script>
