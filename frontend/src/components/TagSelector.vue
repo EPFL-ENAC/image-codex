@@ -39,13 +39,39 @@ import { CategoryNode, CategoryTree } from "@/models/category-tree";
 import { tagSeparator } from "@/utils/contants";
 import { unique } from "@/utils/functions";
 
+type Category = ComboboxItem | string;
+
 @Component
 export default class TagSelector extends Vue {
   value: string[] = [];
-  selectedCategories: (ComboboxItem | string)[] = [];
+  selectedCategories: Category[] = [];
+  backendTags: string[] = [];
+
+  created(): void {
+    this.$http
+      .get<string[]>("tags")
+      .then((response) => response.data)
+      .then((tags) => {
+        this.backendTags = tags;
+      });
+  }
 
   get categoryComboboxItems(): ComboboxItem[] {
-    return this.getComboboxItems(categories as CategoryTree);
+    const items = this.getComboboxItems(categories as CategoryTree);
+    const tags = new Set(
+      items
+        .map((item) => item.value)
+        .flatMap((tags) => tags.split(tagSeparator))
+    );
+    const freeTags: ComboboxItem[] = this.backendTags
+      .filter((tag) => !tags.has(tag))
+      .map((tag) => {
+        return {
+          text: tag,
+          value: tag,
+        };
+      });
+    return items.concat(freeTags);
   }
 
   get selectedTags(): string[] {
@@ -83,16 +109,16 @@ export default class TagSelector extends Vue {
     this.$emit("change");
   }
 
-  getText(category: ComboboxItem | string): string {
+  getText(category: Category): string {
     return this.getString(category, (c) => c.text);
   }
 
-  getValue(category: ComboboxItem | string): string {
+  getValue(category: Category): string {
     return this.getString(category, (c) => c.value);
   }
 
   private getString(
-    category: ComboboxItem | string,
+    category: Category,
     getter: (item: ComboboxItem) => string
   ): string {
     if (typeof category === "string") {
