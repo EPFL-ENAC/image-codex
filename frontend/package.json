@@ -14,6 +14,7 @@
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
     "downloadjs": "^1.4.7",
+    "leaflet": "^1.7.1",
     "piexifjs": "^1.0.6",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
@@ -22,6 +23,7 @@
     "vue-i18n": "^8.26.3",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.2.0",
+    "vue2-leaflet": "^2.7.1",
     "vuetify": "^2.4.0",
     "vuex": "^3.4.0"
   },
@@ -29,6 +31,7 @@
     "@openapitools/openapi-generator-cli": "^2.4.12",
     "@types/chai": "^4.2.11",
     "@types/downloadjs": "^1.4.2",
+    "@types/leaflet": "^1.7.5",
     "@types/mocha": "^5.2.4",
     "@types/node": "^16.9.6",
     "@typescript-eslint/eslint-plugin": "^4.18.0",

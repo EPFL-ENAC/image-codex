@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination.api import add_pagination
 
 from image_codex import __name__, __version__
-from image_codex.routers import compositions, images, root, tags
+from image_codex.routers import compositions, geo, images, root, tags
 
 #######################
 # Configuration Setup #
@@ -45,6 +45,10 @@ app = FastAPI(
             "description": "Manage image compositions",
         },
         {
+            "name": "geo",
+            "description": "Geographic data",
+        },
+        {
             "name": "images",
             "description": "Manage images",
         },
@@ -67,6 +71,7 @@ else:
     print('cors enabled')
 app.include_router(root.router)
 app.include_router(compositions.router)
+app.include_router(geo.router)
 app.include_router(images.router)
 app.include_router(tags.router)
 

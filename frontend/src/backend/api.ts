@@ -160,6 +160,37 @@ export interface CursorPageTaggedImage {
 /**
  * 
  * @export
+ * @interface GeoImage
+ */
+export interface GeoImage {
+    /**
+     * 
+     * @type {string}
+     * @memberof GeoImage
+     */
+    id: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GeoImage
+     */
+    url: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof GeoImage
+     */
+    latitude: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof GeoImage
+     */
+    longitude: number;
+}
+/**
+ * 
+ * @export
  * @interface HTTPValidationError
  */
 export interface HTTPValidationError {
@@ -460,6 +491,112 @@ export class DefaultApi extends BaseAPI {
      */
     public rootGet(options?: any) {
         return DefaultApiFp(this.configuration).rootGet(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * GeoApi - axios parameter creator
+ * @export
+ */
+export const GeoApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Get images in GeoJSON format
+         * @summary Get Images
+         * @param {number} [count] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImagesGeoImagesPost: async (count?: number, options: any = {}): Promise<RequestArgs> => {
+            const localVarPath = `/geo/images`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (count !== undefined) {
+                localVarQueryParameter['count'] = count;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * GeoApi - functional programming interface
+ * @export
+ */
+export const GeoApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = GeoApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Get images in GeoJSON format
+         * @summary Get Images
+         * @param {number} [count] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImagesGeoImagesPost(count?: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GeoImage>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getImagesGeoImagesPost(count, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * GeoApi - factory interface
+ * @export
+ */
+export const GeoApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = GeoApiFp(configuration)
+    return {
+        /**
+         * Get images in GeoJSON format
+         * @summary Get Images
+         * @param {number} [count] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImagesGeoImagesPost(count?: number, options?: any): AxiosPromise<Array<GeoImage>> {
+            return localVarFp.getImagesGeoImagesPost(count, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * GeoApi - object-oriented interface
+ * @export
+ * @class GeoApi
+ * @extends {BaseAPI}
+ */
+export class GeoApi extends BaseAPI {
+    /**
+     * Get images in GeoJSON format
+     * @summary Get Images
+     * @param {number} [count] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GeoApi
+     */
+    public getImagesGeoImagesPost(count?: number, options?: any) {
+        return GeoApiFp(this.configuration).getImagesGeoImagesPost(count, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

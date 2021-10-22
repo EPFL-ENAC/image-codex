@@ -6,6 +6,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from .compositions import *  # noqa: F401,F403
+from .geo import *  # noqa: F401,F403
 from .images import *  # noqa: F401,F403
 from .pages import *  # noqa: F401,F403
 

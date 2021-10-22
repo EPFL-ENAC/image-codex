@@ -75,6 +75,54 @@
         }
       }
     },
+    "/geo/images": {
+      "post": {
+        "tags": [
+          "geo"
+        ],
+        "summary": "Get Images",
+        "description": "Get images in GeoJSON format",
+        "operationId": "get_images_geo_images_post",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Count",
+              "type": "integer",
+              "default": 10
+            },
+            "name": "count",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Images Geo Images Post",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeoImage"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/images/": {
       "get": {
         "tags": [
@@ -436,6 +484,34 @@
             "title": "Size",
             "minimum": 1.0,
             "type": "integer"
+          }
+        }
+      },
+      "GeoImage": {
+        "title": "GeoImage",
+        "required": [
+          "id",
+          "url",
+          "latitude",
+          "longitude"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "latitude": {
+            "title": "Latitude",
+            "type": "number"
+          },
+          "longitude": {
+            "title": "Longitude",
+            "type": "number"
           }
         }
       },

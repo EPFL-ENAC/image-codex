@@ -3,16 +3,19 @@ Handle /images requests
 """
 import base64
 from io import BytesIO
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
+from exif import Image as ExifImage
 from fastapi import APIRouter
 from fastapi.param_functions import Depends, Query
 from fastapi_pagination.bases import AbstractPage
 from image_codex.models import ApiFile, CursorPage, CursorParams, TaggedImage
-from image_codex.utils import CLOUDINARY_FOLDER, get_pil_format
+from image_codex.utils import (CLOUDINARY_FOLDER, MetadataKey, get_pil_format,
+                               map_dms_to_dd, map_id_to_public_id,
+                               map_public_id_to_id)
 from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS
 
@@ -28,27 +31,33 @@ async def create_image(body: ApiFile):
     Upload a new image to the database
     """
     with BytesIO(base64.b64decode(body.base64)) as file:
+        exif_image = ExifImage(file)
         with Image.open(file) as image:
             image = ImageOps.exif_transpose(image)
             exif = image.getexif()
             exif_data = {TAGS.get(tag_id, tag_id):
-                         __get_tag_value(exif, tag_id)
-                         for tag_id in exif}
+                         __get_tag_value(tag_id, value)
+                         for tag_id, value in exif.items()}
             tags = [tag.strip()
                     for tag
                     in exif_data.get('ImageDescription', '').split(',')]
             artist = exif_data.get('Artist')
             copyright = exif_data.get('Copyright')
-            context = {
-                'Artist': artist,
-                'Copyright': copyright,
+            context: Dict[str, Any] = {
+                MetadataKey.ARTIST.value: artist,
+                MetadataKey.COPYRIGHT.value: copyright,
+                MetadataKey.GPS_LATITUDE.value:
+                    map_dms_to_dd(*exif_image.get('gps_latitude')),
+                MetadataKey.GPS_LONGITUDE.value:
+                    map_dms_to_dd(*exif_image.get('gps_longitude')),
             }
             with BytesIO() as new_file:
                 image.save(new_file, get_pil_format(body.type))
                 new_file.seek(0)
                 print(f'uploading {image.format} file to {CLOUDINARY_FOLDER}')
-                return cloudinary.uploader.upload(file=new_file,
-                                                  folder=CLOUDINARY_FOLDER,
+                return cloudinary.uploader.upload(folder=CLOUDINARY_FOLDER,
+                                                  file=new_file,
+                                                  image_metadata=True,
                                                   tags=tags,
                                                   context=context)
 
@@ -88,7 +97,7 @@ async def get_images(image_ids: str) -> List[TaggedImage]:
     """
     Get images with given comma-separated ids
     """
-    public_ids = [__get_public_id(id) for id in image_ids.split(',')]
+    public_ids = [map_id_to_public_id(id) for id in image_ids.split(',')]
     resources = [cloudinary.api.resource(public_id=public_id,
                                          context=True,
                                          tags=True)
@@ -102,7 +111,7 @@ async def delete_images(image_ids: str) -> List[str]:
     """
     Delete images with given comma-separated ids
     """
-    public_ids = [__get_public_id(id) for id in image_ids.split(',')]
+    public_ids = [map_id_to_public_id(id) for id in image_ids.split(',')]
     response = cloudinary.api.delete_resources(public_ids=public_ids)
     return [key
             for key, value
@@ -110,10 +119,11 @@ async def delete_images(image_ids: str) -> List[str]:
             if value == 'deleted']
 
 
-def __get_tag_value(exif: Image.Exif, tag_id: int) -> str:
-    value = exif.get(tag_id)
+def __get_tag_value(tag_id: int, value: Any) -> str:
     if isinstance(value, bytes):
         return value.decode()
+    elif isinstance(value, str):
+        return value
     else:
         return str(value)
 
@@ -123,15 +133,15 @@ def __get_search_response_image(resource: dict[str, Any]) -> TaggedImage:
     https://cloudinary.com/documentation/search_api
     """
     context: dict[str, Any] = resource.get('context', {})
-    id = __get_id(resource)
+    id = map_public_id_to_id(resource.get('public_id', ''))
     return TaggedImage(id=id,
                        name=resource.get('filename'),
                        url=resource.get('secure_url'),
                        width=resource.get('width'),
                        height=resource.get('height'),
                        tags=resource.get('tags'),
-                       author=context.get('Artist'),
-                       license=context.get('Copyright'))
+                       author=context.get(MetadataKey.ARTIST.value),
+                       license=context.get(MetadataKey.COPYRIGHT.value))
 
 
 def __get_admin_response_image(resource: dict[str, Any]) -> TaggedImage:
@@ -139,21 +149,12 @@ def __get_admin_response_image(resource: dict[str, Any]) -> TaggedImage:
     https://cloudinary.com/documentation/admin_api
     """
     context: dict[str, Any] = resource.get('context', {}).get('custom', {})
-    id = __get_id(resource)
+    id = map_public_id_to_id(resource.get('public_id', ''))
     return TaggedImage(id=id,
                        name=id,
                        url=resource.get('secure_url'),
                        width=resource.get('width'),
                        height=resource.get('height'),
                        tags=resource.get('tags'),
-                       author=context.get('Artist'),
-                       license=context.get('Copyright'))
-
-
-def __get_id(resource: dict[str, Any]) -> str:
-    public_id: str = resource.get('public_id', '')
-    return public_id.removeprefix(CLOUDINARY_FOLDER + '/')
-
-
-def __get_public_id(id: str) -> str:
-    return f'{CLOUDINARY_FOLDER}/{id}'
+                       author=context.get(MetadataKey.ARTIST.value),
+                       license=context.get(MetadataKey.COPYRIGHT.value))
