@@ -42,7 +42,7 @@ export default class ImagesMap extends Vue {
 
   created(): void {
     this.$http
-      .get<GeoImage[]>("geo/images")
+      .get<GeoImage[]>("/geo/images")
       .then((response) => response.data)
       .then((images) => {
         this.images = images;

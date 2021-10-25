@@ -123,7 +123,7 @@ export default class ImageBrowser extends Vue {
       .confirmDialog as ConfirmDialog;
     confirmDialog.open(`image ${id} will be deleted`).then((confirmed) => {
       if (confirmed) {
-        this.$http.delete(`images/${id}`).then(() => this.initializeImages());
+        this.$http.delete(`/images/${id}`).then(() => this.initializeImages());
       }
     });
   }

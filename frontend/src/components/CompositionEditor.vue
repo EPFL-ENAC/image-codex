@@ -172,13 +172,17 @@ export default class CompositionEditor extends Vue {
     if (value) {
       try {
         const composition = JSON.parse(value) as Composition;
-        const imageIds = composition.images.map((image) => image.id).join(",");
-        this.$http
-          .get<TaggedImage[]>(`images/${imageIds}`)
-          .then((response) => response.data)
-          .then((images) =>
-            images.forEach((image) => this.images.set(image.id, image))
-          );
+        if (composition.images.length > 0) {
+          const imageIds = composition.images
+            .map((image) => image.id)
+            .join(",");
+          this.$http
+            .get<TaggedImage[]>(`/images/${imageIds}`)
+            .then((response) => response.data)
+            .then((images) =>
+              images.forEach((image) => this.images.set(image.id, image))
+            );
+        }
         if (!composition.width || composition.width < 0) {
           composition.width = CompositionEditor.defaultWidth;
         }

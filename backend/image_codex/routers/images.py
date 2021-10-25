@@ -25,7 +25,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 async def create_image(body: ApiFile):
     """
     Upload a new image to the database
@@ -62,7 +62,7 @@ async def create_image(body: ApiFile):
                                                   context=context)
 
 
-@router.get('/', response_model=CursorPage[TaggedImage])
+@router.get('', response_model=CursorPage[TaggedImage])
 async def get_all_images(params: CursorParams = Depends(),
                          tags: List[str] = Query([]),
                          author: Optional[str] = Query(None),

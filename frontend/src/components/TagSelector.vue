@@ -49,7 +49,7 @@ export default class TagSelector extends Vue {
 
   created(): void {
     this.$http
-      .get<string[]>("tags")
+      .get<string[]>("/tags")
       .then((response) => response.data)
       .then((tags) => {
         this.backendTags = tags;

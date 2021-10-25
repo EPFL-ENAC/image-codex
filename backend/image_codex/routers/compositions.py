@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-@router.post('/', response_model=ApiFile)
+@router.post('', response_model=ApiFile)
 async def create_composition(
         composition: Composition,
         mimetype: str = Query('application/pdf')) -> ApiFile:
