@@ -105,8 +105,18 @@ export default class TagSelector extends Vue {
   }
 
   onChange(): void {
-    this.$emit("input", this.selectedTags);
-    this.$emit("change");
+    this.selectedCategories = this.selectedCategories
+      .map((category) => {
+        if (typeof category == "string") {
+          return category.toLowerCase().replaceAll(",", "").trim();
+        } else {
+          return category;
+        }
+      })
+      .filter((category) => category);
+    const tags = this.selectedTags;
+    this.$emit("input", tags);
+    this.$emit("change", tags);
   }
 
   getText(category: Category): string {

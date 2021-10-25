@@ -1,6 +1,10 @@
 # Image Codex - Backend
 
-Backend for Image Codex: https://image-codex-enac.epfl.ch/api/docs
+Backend for Image Codex.
+
+API Documentation: 
+- http://localhost:8000/docs
+- https://image-codex-enac.epfl.ch/api/docs
 
 Module `image_codex` is created by Poetry and follows its files structure: https://python-poetry.org/docs/basic-usage/#project-setup
 
