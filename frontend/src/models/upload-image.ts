@@ -12,8 +12,6 @@ export default class UploadImage {
     piexif.ImageIFD.Copyright,
   ];
 
-  public name: string | undefined;
-  public type: string | undefined;
   public oldAuthor: string | undefined;
   public newAuthor: string | undefined;
   public oldCopyright: string | undefined;
@@ -23,9 +21,11 @@ export default class UploadImage {
   private oldTags: Set<string>;
   private newTags: Set<string>;
 
-  constructor(file?: File, public content?: string) {
-    this.name = file?.name;
-    this.type = file?.type;
+  constructor(
+    public name: string,
+    public type: string,
+    public content: string
+  ) {
     this.exif = content ? piexif.load(content) : {};
     this.oldTags = this.getTags();
     this.newTags = new Set(this.oldTags);

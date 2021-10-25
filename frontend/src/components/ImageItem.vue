@@ -105,12 +105,12 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Image from "@/models/upload-image";
+import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 
 const ImageItemProps = Vue.extend({
   props: {
-    value: Image,
+    value: UploadImage,
   },
 });
 
@@ -129,7 +129,10 @@ export default class ImageItem extends ImageItemProps {
   }
 
   private notify(): void {
-    const image: Image = Object.assign(new Image(), this.value);
+    const image: UploadImage = Object.assign(
+      new UploadImage(this.value.name, this.value.type, this.value.content),
+      this.value
+    );
     this.$emit("input", image);
   }
 }

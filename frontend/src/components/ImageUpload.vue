@@ -94,6 +94,8 @@ import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import TagSelector from "@/components/TagSelector.vue";
 import { ApiFile } from "@/backend";
+import { mapDataUrlToBase64 } from "@/utils/functions";
+import { extension } from "mime-types";
 
 @Component({
   components: {
@@ -132,9 +134,23 @@ export default class ImageUpload extends Vue {
   onChangeImages(): void {
     const files = this.imageFiles;
     Promise.all(files.map(this.mapFileToBase64)).then((contents) => {
-      return (this.images = contents.map(
-        (content, i) => new UploadImage(files[i], content)
-      ));
+      this.images = contents.map((content, i) => {
+        const file = files[i];
+        return new UploadImage(file.name, file.type, content);
+      });
+      this.images.forEach((image) => {
+        const apiFile: ApiFile = {
+          type: image.type,
+          base64: mapDataUrlToBase64(image.content),
+        };
+        this.$http
+          .post<string>("/images/hash", apiFile)
+          .then((response) => response.data)
+          .then((hash) => {
+            const ext: string = extension(image.type) || "";
+            image.name = `${hash}.${ext}`;
+          });
+      });
     });
   }
 
@@ -153,7 +169,7 @@ export default class ImageUpload extends Vue {
         const apiFile: ApiFile = {
           name: image.name,
           type: image.type,
-          base64: content.startsWith("data:") ? content.split(",")[1] : content,
+          base64: mapDataUrlToBase64(content),
         };
         return this.$http.post("/images", apiFile);
       })

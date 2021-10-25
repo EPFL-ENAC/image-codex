@@ -2,17 +2,20 @@
 Handle /images requests
 """
 import base64
+import mimetypes
 from io import BytesIO
 from typing import Any, Dict, List, Optional
 
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
+import imagehash
 from exif import Image as ExifImage
 from fastapi import APIRouter
 from fastapi.param_functions import Depends, Query
 from fastapi_pagination.bases import AbstractPage
-from image_codex.models import ApiFile, CursorPage, CursorParams, TaggedImage
+from image_codex.models import (ApiFile, CursorPage, CursorParams, HashMethod,
+                                TaggedImage)
 from image_codex.utils import (CLOUDINARY_FOLDER, MetadataKey, get_pil_format,
                                map_dms_to_dd, map_id_to_public_id,
                                map_public_id_to_id)
@@ -33,6 +36,7 @@ async def create_image(body: ApiFile):
     with BytesIO(base64.b64decode(body.base64)) as file:
         exif_image = ExifImage(file)
         with Image.open(file) as image:
+            hash: str = str(imagehash.phash(image))
             image = ImageOps.exif_transpose(image)
             exif = image.getexif()
             exif_data = {TAGS.get(tag_id, tag_id):
@@ -55,11 +59,12 @@ async def create_image(body: ApiFile):
                 image.save(new_file, get_pil_format(body.type))
                 new_file.seek(0)
                 print(f'uploading {image.format} file to {CLOUDINARY_FOLDER}')
-                return cloudinary.uploader.upload(folder=CLOUDINARY_FOLDER,
-                                                  file=new_file,
-                                                  image_metadata=True,
-                                                  tags=tags,
-                                                  context=context)
+                return cloudinary.uploader.upload(
+                    public_id=f'{CLOUDINARY_FOLDER}/{hash}',
+                    file=new_file,
+                    image_metadata=True,
+                    tags=tags,
+                    context=context)
 
 
 @router.get('', response_model=CursorPage[TaggedImage])
@@ -117,6 +122,19 @@ async def delete_images(image_ids: str) -> List[str]:
             for key, value
             in response.get('deleted', {}).items()
             if value == 'deleted']
+
+
+@router.post('/hash')
+async def get_image_hash(body: ApiFile,
+                         method: HashMethod = Query(HashMethod.phash)
+                         ) -> str:
+    """
+    Returns image hash
+    """
+    if method == HashMethod.phash:
+        with BytesIO(base64.b64decode(body.base64)) as file:
+            with Image.open(file) as image:
+                return str(imagehash.phash(image))
 
 
 def __get_tag_value(tag_id: int, value: Any) -> str:
