@@ -64,17 +64,17 @@ export default class App extends Vue {
   languages = ["en", "de"];
   usernameDialog = !this.username;
 
-  setLanguage(language: string): void {
-    this.$i18n.locale = language;
-    localStorage.setItem(LocalStorageKey.Language, language);
-  }
-
   get username(): string {
     return this.$store.state.username;
   }
 
   set username(value: string) {
     this.$store.commit("setUsername", value);
+  }
+
+  setLanguage(language: string): void {
+    this.$i18n.locale = language;
+    localStorage.setItem(LocalStorageKey.Language, language);
   }
 }
 </script>

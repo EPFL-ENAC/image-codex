@@ -1,5 +1,5 @@
 <template>
-  <l-map style="height: 1024px" :center="[46.8, 8.1]" :zoom="8">
+  <l-map :center="[46.8, 8.1]" :zoom="8">
     <l-tile-layer
       url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
       attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
@@ -15,6 +15,13 @@
     </l-marker>
   </l-map>
 </template>
+
+<style scoped>
+.leaflet-container {
+  height: 1024px;
+  z-index: 0;
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";
