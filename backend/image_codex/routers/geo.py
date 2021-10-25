@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.get('/images', response_model=List[GeoImage])
-async def get_images(count: int = Query(10)) -> List[GeoImage]:
+async def get_images(count: int = Query(500)) -> List[GeoImage]:
     """
     Get images in GeoJSON format
     """
