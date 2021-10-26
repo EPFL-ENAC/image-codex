@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - feature/build
   pull_request:
     branches:
       - develop
@@ -23,3 +24,25 @@ jobs:
           node-version: 14.x
       - run: npm ci
       - run: npm run build
+  build-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-in-project: true
+      - id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: backend/.venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - run: poetry build
+      - run: poetry run pytest
