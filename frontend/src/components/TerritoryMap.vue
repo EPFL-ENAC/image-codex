@@ -8,11 +8,30 @@
       v-for="image in images"
       :key="image.id"
       :lat-lng="[image.latitude, image.longitude]"
+      @click="onClickTooltip(image)"
     >
       <l-tooltip>
         <v-img :src="image.url" max-height="128" max-width="128"></v-img>
       </l-tooltip>
     </l-marker>
+    <v-dialog v-model="imageDialog" max-width="512">
+      <v-card v-if="selectedImage">
+        <v-card-title>{{ selectedImage.id }}</v-card-title>
+        <v-card-text>
+          <v-img :src="selectedImage.url"></v-img>
+          <v-chip-group column>
+            <v-chip v-for="tag in selectedImage.tags" :key="tag">
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" text @click="imageDialog = false"
+            >Dismiss</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </l-map>
 </template>
 
@@ -37,8 +56,10 @@ import { GeoImage } from "@/backend";
     LTooltip,
   },
 })
-export default class ImagesMap extends Vue {
+export default class TerritoryMap extends Vue {
   images: GeoImage[] = [];
+  imageDialog = false;
+  selectedImage: GeoImage | null = null;
 
   created(): void {
     this.$http
@@ -47,6 +68,11 @@ export default class ImagesMap extends Vue {
       .then((images) => {
         this.images = images;
       });
+  }
+
+  onClickTooltip(image: GeoImage): void {
+    this.selectedImage = image;
+    this.imageDialog = true;
   }
 }
 </script>

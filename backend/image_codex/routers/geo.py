@@ -1,7 +1,7 @@
 """
 Handle /geo requests
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import cloudinary.api
 from fastapi import APIRouter
@@ -19,13 +19,14 @@ router = APIRouter(
 @router.get('/images', response_model=List[GeoImage])
 async def get_images(count: int = Query(500)) -> List[GeoImage]:
     """
-    Get images in GeoJSON format
+    Get list of GeoImages
     """
     resources: List[Dict[str, Any]] = cloudinary.api.resources(
         prefix=CLOUDINARY_FOLDER + '/',
         type='upload',
         max_results=count,
-        context=True)\
+        context=True,
+        tags=True)\
         .get('resources', [])
     images: List[GeoImage] = []
     for resource in resources:
@@ -33,11 +34,13 @@ async def get_images(count: int = Query(500)) -> List[GeoImage]:
         latitude: Optional[str] = context.get(MetadataKey.GPS_LATITUDE.value)
         longitude: Optional[str] = context.get(
             MetadataKey.GPS_LONGITUDE.value)
+        tags: List[str] = resource.get('tags', [])
         if latitude is not None and longitude is not None:
             images.append(GeoImage(
                 id=map_public_id_to_id(resource.get('public_id', '')),
                 url=resource.get('secure_url'),
                 latitude=float(latitude),
                 longitude=float(longitude),
+                tags=tags
             ))
     return images

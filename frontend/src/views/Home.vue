@@ -1,18 +1,18 @@
 <template>
   <v-container>
     <h1>Image Codex</h1>
-    <images-map></images-map>
+    <territory-map></territory-map>
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import ImagesMap from "@/components/ImagesMap.vue";
+import TerritoryMap from "@/components/TerritoryMap.vue";
 
 @Component({
   components: {
-    ImagesMap,
+    TerritoryMap,
   },
 })
 export default class Home extends Vue {}
