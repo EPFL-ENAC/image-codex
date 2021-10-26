@@ -3,6 +3,8 @@
     <v-app-bar app color="primary" dark>
       <v-app-bar-title>Image Codex</v-app-bar-title>
       <v-spacer></v-spacer>
+
+      <!-- PopUp Dialog Username-->
       <v-dialog v-model="usernameDialog" max-width="256" persistent>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" text>
@@ -23,6 +25,8 @@
           </v-form>
         </v-card>
       </v-dialog>
+
+      <!-- Top of AppBar -->
       <v-menu>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" text>
@@ -39,6 +43,8 @@
           </v-list-item>
         </v-list>
       </v-menu>
+
+      <!-- NavBar -->
       <template v-slot:extension>
         <v-tabs>
           <v-tab to="/">Home</v-tab>
@@ -62,10 +68,10 @@ import { LocalStorageKey } from "./utils/contants";
 @Component
 export default class App extends Vue {
   languages = ["en", "de"];
-  usernameDialog = !this.username;
+  usernameDialog = !this.username; 
 
   setLanguage(language: string): void {
-    this.$i18n.locale = language;
+    this.$i18n.locale = language; 
     localStorage.setItem(LocalStorageKey.Language, language);
   }
 

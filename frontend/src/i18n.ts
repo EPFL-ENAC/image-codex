@@ -1,3 +1,5 @@
+// Translation module 
+
 import VueI18n, { LocaleMessages } from "vue-i18n";
 
 import { LocalStorageKey } from "./utils/contants";
