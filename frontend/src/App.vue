@@ -54,6 +54,13 @@
   </v-app>
 </template>
 
+<style>
+/* https://vuetifyjs.com/en/getting-started/frequently-asked-questions/#scrollbar-overflow */
+html {
+  overflow-y: auto !important;
+}
+</style>
+
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";

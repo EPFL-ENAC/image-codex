@@ -53,7 +53,7 @@
 
 <style scoped>
 .scrollable {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 </style>
 

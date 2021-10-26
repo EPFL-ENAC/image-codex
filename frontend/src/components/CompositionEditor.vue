@@ -135,7 +135,7 @@
 
 <style scoped>
 .background {
-  overflow: scroll;
+  overflow: auto;
   background-color: var(--v-secondary-lighten4);
 }
 .parent {
