@@ -10,9 +10,7 @@
       :lat-lng="[image.latitude, image.longitude]"
       @click="onClickTooltip(image)"
     >
-      <l-tooltip>
-        <v-img :src="image.url" max-height="128" max-width="128"></v-img>
-      </l-tooltip>
+      <l-icon :icon-url="image.url" :iconSize="[64, 64]"></l-icon>
     </l-marker>
     <v-dialog v-model="imageDialog" max-width="512">
       <v-card v-if="selectedImage">
@@ -45,7 +43,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { LMap, LTileLayer, LMarker, LTooltip } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LIcon } from "vue2-leaflet";
 import { GeoImage } from "@/backend";
 
 @Component({
@@ -53,7 +51,7 @@ import { GeoImage } from "@/backend";
     LMap,
     LTileLayer,
     LMarker,
-    LTooltip,
+    LIcon,
   },
 })
 export default class TerritoryMap extends Vue {

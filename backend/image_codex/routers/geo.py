@@ -1,7 +1,7 @@
 """
 Handle /geo requests
 """
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import cloudinary.api
 from fastapi import APIRouter
