@@ -8,7 +8,6 @@
       <v-text-field
         v-model="author"
         label="Author"
-        clearable
         @change="initializeImages"
       ></v-text-field>
       <v-row>

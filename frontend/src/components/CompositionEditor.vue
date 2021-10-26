@@ -159,6 +159,7 @@ import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class CompositionEditor extends Vue {
+  static readonly defaultName = "composition";
   static readonly defaultWidth = 1123;
   static readonly defaultHeight = 794;
   composition: Composition = this.getCompositionOrDefault();
@@ -183,6 +184,9 @@ export default class CompositionEditor extends Vue {
               images.forEach((image) => this.images.set(image.id, image))
             );
         }
+        if (!composition.name) {
+          composition.name = CompositionEditor.defaultName;
+        }
         if (!composition.width || composition.width < 0) {
           composition.width = CompositionEditor.defaultWidth;
         }
@@ -195,7 +199,7 @@ export default class CompositionEditor extends Vue {
       }
     }
     return {
-      name: "",
+      name: CompositionEditor.defaultName,
       width: CompositionEditor.defaultWidth,
       height: CompositionEditor.defaultHeight,
       images: [],
