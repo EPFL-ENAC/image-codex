@@ -49,9 +49,11 @@ async def create_image(body: ApiFile):
                 MetadataKey.ARTIST.value: artist,
                 MetadataKey.COPYRIGHT.value: copyright,
                 MetadataKey.GPS_LATITUDE.value:
-                    map_dms_to_dd(*exif_image.get('gps_latitude')),
+                    map_dms_to_dd(exif_image.get('gps_latitude'),
+                                  exif_image.get('gps_latitude_ref')),
                 MetadataKey.GPS_LONGITUDE.value:
-                    map_dms_to_dd(*exif_image.get('gps_longitude')),
+                    map_dms_to_dd(exif_image.get('gps_longitude'),
+                                  exif_image.get('gps_longitude_ref')),
             }
             with BytesIO() as new_file:
                 image.save(new_file, get_pil_format(body.type))
