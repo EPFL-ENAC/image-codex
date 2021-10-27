@@ -15,5 +15,5 @@ import TerritoryMap from "@/components/TerritoryMap.vue";
     TerritoryMap,
   },
 })
-export default class Home extends Vue {}
+export default class Territory extends Vue {}
 </script>
