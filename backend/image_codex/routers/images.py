@@ -2,7 +2,6 @@
 Handle /images requests
 """
 import base64
-import mimetypes
 from io import BytesIO
 from typing import Any, Dict, List, Optional
 
@@ -17,7 +16,7 @@ from fastapi_pagination.bases import AbstractPage
 from image_codex.models import (ApiFile, CursorPage, CursorParams, HashMethod,
                                 TaggedImage)
 from image_codex.utils import (CLOUDINARY_FOLDER, MetadataKey, get_pil_format,
-                               map_dms_to_dd, map_id_to_public_id,
+                               is_admin, map_dms_to_dd, map_id_to_public_id,
                                map_public_id_to_id)
 from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS
@@ -111,7 +110,7 @@ async def get_images(image_ids: str) -> List[TaggedImage]:
             for resource in resources]
 
 
-@router.delete('/{image_ids}')
+@router.delete('/{image_ids}', dependencies=[Depends(is_admin)])
 async def delete_images(image_ids: str) -> List[str]:
     """
     Delete images with given comma-separated ids

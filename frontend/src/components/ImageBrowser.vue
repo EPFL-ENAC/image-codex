@@ -46,7 +46,7 @@
         </v-col>
       </v-row>
     </v-card-text>
-    <confirm-dialog ref="confirmDialog"></confirm-dialog>
+    <auth-confirm-dialog ref="confirmDialog"></auth-confirm-dialog>
   </v-card>
 </template>
 
@@ -60,12 +60,12 @@
 import { Vue, Component } from "vue-property-decorator";
 import { paramsSerializer } from "@/utils/functions";
 import TagSelector from "./TagSelector.vue";
-import ConfirmDialog from "./ConfirmDialog.vue";
+import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
 import { CursorPageTaggedImage, TaggedImage } from "@/backend";
 
 @Component({
   components: {
-    ConfirmDialog,
+    AuthConfirmDialog,
     TagSelector,
   },
 })
@@ -118,13 +118,17 @@ export default class ImageBrowser extends Vue {
   }
 
   deleteImage(id: string): void {
-    const confirmDialog: ConfirmDialog = this.$refs
-      .confirmDialog as ConfirmDialog;
-    confirmDialog.open(`image ${id} will be deleted`).then((confirmed) => {
-      if (confirmed) {
-        this.$http.delete(`/images/${id}`).then(() => this.initializeImages());
-      }
-    });
+    const confirmDialog: AuthConfirmDialog = this.$refs
+      .confirmDialog as AuthConfirmDialog;
+    confirmDialog
+      .open(`Image ${id} will be permanently deleted from the server.`)
+      .then((credential) => {
+        this.$http
+          .delete(`/images/${id}`, {
+            auth: credential,
+          })
+          .then(() => this.initializeImages());
+      });
   }
 }
 </script>
