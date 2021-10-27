@@ -28,10 +28,18 @@
               </v-chip>
             </v-chip-group>
             <v-card-actions>
-              <v-btn color="primary" icon @click="$emit('add', item)">
+              <v-btn
+                color="primary"
+                title="Add to composition"
+                icon
+                @click="$emit('add', item)"
+              >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
-              <v-btn icon @click="deleteImage(item.id)">
+              <v-btn icon title="Edit" @click="editImage(item)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn icon title="Delete" @click="deleteImage(item.id)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </v-card-actions>
@@ -46,7 +54,9 @@
         </v-col>
       </v-row>
     </v-card-text>
-    <auth-confirm-dialog ref="confirmDialog"></auth-confirm-dialog>
+    <image-editor-dialog ref="editDialog"></image-editor-dialog>
+    <auth-confirm-dialog ref="editConfirmDialog"></auth-confirm-dialog>
+    <auth-confirm-dialog ref="deleteConfirmDialog"></auth-confirm-dialog>
   </v-card>
 </template>
 
@@ -61,11 +71,13 @@ import { Vue, Component } from "vue-property-decorator";
 import { paramsSerializer } from "@/utils/functions";
 import TagSelector from "./TagSelector.vue";
 import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
+import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
 import { CursorPageTaggedImage, TaggedImage } from "@/backend";
 
 @Component({
   components: {
     AuthConfirmDialog,
+    ImageEditorDialog,
     TagSelector,
   },
 })
@@ -117,18 +129,37 @@ export default class ImageBrowser extends Vue {
     this.updateItems((images) => this.images.push(...images));
   }
 
-  deleteImage(id: string): void {
+  editImage(image: TaggedImage): void {
+    const dialog: ImageEditorDialog = this.$refs
+      .editDialog as ImageEditorDialog;
     const confirmDialog: AuthConfirmDialog = this.$refs
-      .confirmDialog as AuthConfirmDialog;
-    confirmDialog
+      .editConfirmDialog as AuthConfirmDialog;
+    dialog
+      .open(image)
+      .then((image) =>
+        confirmDialog
+          .open(`Image ${image.id} will be modified on the server.`)
+          .then((credential) =>
+            this.$http.post(`/images/${image.id}`, image, {
+              auth: credential,
+            })
+          )
+      )
+      .then(() => new Promise((f) => setTimeout(f, 1000)))
+      .then(() => this.initializeImages());
+  }
+
+  deleteImage(id: string): void {
+    const dialog: AuthConfirmDialog = this.$refs
+      .deleteConfirmDialog as AuthConfirmDialog;
+    dialog
       .open(`Image ${id} will be permanently deleted from the server.`)
-      .then((credential) => {
-        this.$http
-          .delete(`/images/${id}`, {
-            auth: credential,
-          })
-          .then(() => this.initializeImages());
-      });
+      .then((credential) =>
+        this.$http.delete(`/images/${id}`, {
+          auth: credential,
+        })
+      )
+      .then(() => this.initializeImages());
   }
 }
 </script>

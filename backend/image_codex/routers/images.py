@@ -38,8 +38,7 @@ async def create_image(body: ApiFile):
             hash: str = str(imagehash.phash(image))
             image = ImageOps.exif_transpose(image)
             exif = image.getexif()
-            exif_data = {TAGS.get(tag_id, tag_id):
-                         __get_tag_value(tag_id, value)
+            exif_data = {TAGS.get(tag_id, tag_id): __get_tag_value(value)
                          for tag_id, value in exif.items()}
             tags = [tag.strip()
                     for tag
@@ -96,6 +95,20 @@ async def get_all_images(params: CursorParams = Depends(),
     return CursorPage.create(images, total_count, params)
 
 
+@router.post('/{image_id}',
+             dependencies=[Depends(is_admin)],
+             response_model=TaggedImage)
+async def update_image(image_id: str, body: TaggedImage) -> TaggedImage:
+    """
+    Update following fields of an image:
+    * tags
+    """
+    public_id = map_id_to_public_id(image_id)
+    resource = cloudinary.api.update(public_id,
+                                     tags=body.tags)
+    return __get_admin_response_image(resource)
+
+
 @router.get('/{image_ids}', response_model=List[TaggedImage])
 async def get_images(image_ids: str) -> List[TaggedImage]:
     """
@@ -110,7 +123,8 @@ async def get_images(image_ids: str) -> List[TaggedImage]:
             for resource in resources]
 
 
-@router.delete('/{image_ids}', dependencies=[Depends(is_admin)])
+@router.delete('/{image_ids}',
+               dependencies=[Depends(is_admin)])
 async def delete_images(image_ids: str) -> List[str]:
     """
     Delete images with given comma-separated ids
@@ -136,7 +150,7 @@ async def get_image_hash(body: ApiFile,
                 return str(imagehash.phash(image))
 
 
-def __get_tag_value(tag_id: int, value: Any) -> str:
+def __get_tag_value(value: Any) -> str:
     if isinstance(value, bytes):
         return value.decode()
     elif isinstance(value, str):
