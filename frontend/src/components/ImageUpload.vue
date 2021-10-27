@@ -143,8 +143,8 @@ export default class ImageUpload extends Vue {
           type: image.type,
           base64: mapDataUrlToBase64(image.content),
         };
-        this.$http
-          .post<string>("/images/hash", apiFile)
+        this.$hashApi
+          .getImageHashHashImagePost(apiFile)
           .then((response) => response.data)
           .then((hash) => {
             const ext: string = extension(image.type) || "";
@@ -171,7 +171,7 @@ export default class ImageUpload extends Vue {
           type: image.type,
           base64: mapDataUrlToBase64(content),
         };
-        return this.$http.post("/images", apiFile);
+        return this.$imagesApi.createImageImagesPost(apiFile);
       })
     )
       .catch((reason) => {

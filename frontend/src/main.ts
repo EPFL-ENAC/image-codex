@@ -2,6 +2,14 @@ import "./registerServiceWorker";
 import "leaflet/dist/leaflet.css";
 import "vue-draggable-resizable/dist/VueDraggableResizable.css";
 
+import {
+  CompositionsApi,
+  GeoApi,
+  HashApi,
+  ImagesApi,
+  TagsApi,
+} from "./backend";
+
 import App from "./App.vue";
 import { Icon } from "leaflet";
 import Vue from "vue";
@@ -14,9 +22,17 @@ import vuetify from "./plugins/vuetify";
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$http = axios.create({
-  baseURL: process.env.VUE_APP_BACKEND_URL,
-});
+const axiosInstance = axios.create();
+const baseUrl = process.env.VUE_APP_BACKEND_URL;
+Vue.prototype.$compositionsApi = new CompositionsApi(
+  undefined,
+  baseUrl,
+  axiosInstance
+);
+Vue.prototype.$geoApi = new GeoApi(undefined, baseUrl, axiosInstance);
+Vue.prototype.$hashApi = new HashApi(undefined, baseUrl, axiosInstance);
+Vue.prototype.$imagesApi = new ImagesApi(undefined, baseUrl, axiosInstance);
+Vue.prototype.$tagsApi = new TagsApi(undefined, baseUrl, axiosInstance);
 
 Vue.component("vue-draggable-resizable", VueDraggableResizable);
 

@@ -70,8 +70,8 @@ export default class TerritoryMap extends Vue {
   selectedImage: GeoImage | null = null;
 
   created(): void {
-    this.$http
-      .get<GeoImage[]>("/geo/images")
+    this.$geoApi
+      .getImagesGeoImagesGet()
       .then((response) => response.data)
       .then((images) => {
         this.images = images;

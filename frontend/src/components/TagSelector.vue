@@ -54,8 +54,8 @@ export default class TagSelector extends TagSelectorProps {
 
   created(): void {
     this.onValueChanged();
-    this.$http
-      .get<string[]>("/tags")
+    this.$tagsApi
+      .getTagsTagsGet()
       .then((response) => response.data)
       .then((tags) => {
         this.backendTags = tags;

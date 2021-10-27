@@ -5,8 +5,7 @@ import base64
 from io import BytesIO
 
 import requests
-from fastapi import APIRouter
-from fastapi.param_functions import Query
+from fastapi import APIRouter, Query
 from image_codex.models import ApiFile, Composition
 from image_codex.utils import get_pil_format
 from PIL import Image

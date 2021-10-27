@@ -153,7 +153,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { ApiFile, ComposedImage, Composition, TaggedImage } from "@/backend";
+import { ComposedImage, Composition, TaggedImage } from "@/backend";
 import download from "downloadjs";
 import { LocalStorageKey } from "@/utils/contants";
 
@@ -177,8 +177,8 @@ export default class CompositionEditor extends Vue {
           const imageIds = composition.images
             .map((image) => image.id)
             .join(",");
-          this.$http
-            .get<TaggedImage[]>(`/images/${imageIds}`)
+          this.$imagesApi
+            .getImagesImagesImageIdsGet(imageIds)
             .then((response) => response.data)
             .then((images) =>
               images.forEach((image) => this.images.set(image.id, image))
@@ -280,8 +280,8 @@ export default class CompositionEditor extends Vue {
   }
 
   downloadComposition(): void {
-    this.$http
-      .post<ApiFile>("/compositions", this.composition)
+    this.$compositionsApi
+      .createCompositionCompositionsPost(this.composition)
       .then((response) => {
         const file = response.data;
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs

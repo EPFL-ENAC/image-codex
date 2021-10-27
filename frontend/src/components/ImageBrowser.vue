@@ -68,11 +68,10 @@
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import { paramsSerializer } from "@/utils/functions";
 import TagSelector from "./TagSelector.vue";
 import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
 import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
-import { CursorPageTaggedImage, TaggedImage } from "@/backend";
+import { TaggedImage } from "@/backend";
 
 @Component({
   components: {
@@ -102,16 +101,13 @@ export default class ImageBrowser extends Vue {
   }
 
   private updateItems(callback: (images: TaggedImage[]) => void) {
-    this.$http
-      .get<CursorPageTaggedImage>("/images", {
-        params: {
-          size: this.pageSize,
-          next: this.next,
-          tags: this.selectedTags,
-          author: this.author ? this.author : undefined,
-        },
-        paramsSerializer: paramsSerializer,
-      })
+    this.$imagesApi
+      .getAllImagesImagesGet(
+        this.selectedTags,
+        this.author ? this.author : undefined,
+        this.next,
+        this.pageSize
+      )
       .then((response) => {
         this.next = response.data.next;
         this.imagesCount = response.data.total;
@@ -140,7 +136,7 @@ export default class ImageBrowser extends Vue {
         confirmDialog
           .open(`Image ${image.id} will be modified on the server.`)
           .then((credential) =>
-            this.$http.post(`/images/${image.id}`, image, {
+            this.$imagesApi.updateImageImagesImageIdPost(image.id, image, {
               auth: credential,
             })
           )
@@ -155,7 +151,7 @@ export default class ImageBrowser extends Vue {
     dialog
       .open(`Image ${id} will be permanently deleted from the server.`)
       .then((credential) =>
-        this.$http.delete(`/images/${id}`, {
+        this.$imagesApi.deleteImagesImagesImageIdsDelete(id, {
           auth: credential,
         })
       )

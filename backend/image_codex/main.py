@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination.api import add_pagination
 
 from image_codex import __name__, __version__
-from image_codex.routers import compositions, geo, images, root, tags
+from image_codex.routers import compositions, geo, hash, images, root, tags
 from image_codex.utils import cloudinary_config, fast_api_config
 
 #########################
@@ -52,6 +52,7 @@ else:
 app.include_router(root.router)
 app.include_router(compositions.router)
 app.include_router(geo.router)
+app.include_router(hash.router)
 app.include_router(images.router)
 app.include_router(tags.router)
 

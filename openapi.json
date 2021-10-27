@@ -123,6 +123,61 @@
         }
       }
     },
+    "/hash/image": {
+      "post": {
+        "tags": [
+          "hash"
+        ],
+        "summary": "Get Image Hash",
+        "description": "Returns image hash",
+        "operationId": "get_image_hash_hash_image_post",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/HashMethod"
+                }
+              ],
+              "default": "phash"
+            },
+            "name": "method",
+            "in": "query"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/images": {
       "get": {
         "tags": [
@@ -385,61 +440,6 @@
             "HTTPBasic": []
           }
         ]
-      }
-    },
-    "/images/hash": {
-      "post": {
-        "tags": [
-          "images"
-        ],
-        "summary": "Get Image Hash",
-        "description": "Returns image hash",
-        "operationId": "get_image_hash_images_hash_post",
-        "parameters": [
-          {
-            "required": false,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/HashMethod"
-                }
-              ],
-              "default": "phash"
-            },
-            "name": "method",
-            "in": "query"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApiFile"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/tags": {

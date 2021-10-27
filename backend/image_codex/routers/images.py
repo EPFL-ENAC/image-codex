@@ -10,11 +10,9 @@ import cloudinary.api
 import cloudinary.uploader
 import imagehash
 from exif import Image as ExifImage
-from fastapi import APIRouter
-from fastapi.param_functions import Depends, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi_pagination.bases import AbstractPage
-from image_codex.models import (ApiFile, CursorPage, CursorParams, HashMethod,
-                                TaggedImage)
+from image_codex.models import ApiFile, CursorPage, CursorParams, TaggedImage
 from image_codex.utils import (CLOUDINARY_FOLDER, MetadataKey, get_pil_format,
                                is_admin, map_dms_to_dd, map_id_to_public_id,
                                map_public_id_to_id)
@@ -137,19 +135,6 @@ async def delete_images(image_ids: str) -> List[str]:
             for key, value
             in response.get('deleted', {}).items()
             if value == 'deleted']
-
-
-@router.post('/hash')
-async def get_image_hash(body: ApiFile,
-                         method: HashMethod = Query(HashMethod.phash)
-                         ) -> str:
-    """
-    Returns image hash
-    """
-    if method == HashMethod.phash:
-        with BytesIO(base64.b64decode(body.base64)) as file:
-            with Image.open(file) as image:
-                return str(imagehash.phash(image))
 
 
 def __get_tag_value(value: Any) -> str:

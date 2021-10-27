@@ -4,11 +4,10 @@ Handle /geo requests
 from typing import Any, Dict, List, Optional
 
 import cloudinary.api
-from fastapi import APIRouter
-from fastapi.param_functions import Query
+from fastapi import APIRouter, Query
 from image_codex.models import GeoImage
-from image_codex.utils import CLOUDINARY_FOLDER
-from image_codex.utils.cloudinary import MetadataKey, map_public_id_to_id
+from image_codex.utils import (CLOUDINARY_FOLDER, MetadataKey,
+                               map_public_id_to_id)
 
 router = APIRouter(
     prefix='/geo',

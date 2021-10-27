@@ -624,6 +624,121 @@ export class GeoApi extends BaseAPI {
 
 
 /**
+ * HashApi - axios parameter creator
+ * @export
+ */
+export const HashApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Returns image hash
+         * @summary Get Image Hash
+         * @param {ApiFile} apiFile 
+         * @param {HashMethod} [method] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImageHashHashImagePost: async (apiFile: ApiFile, method?: HashMethod, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'apiFile' is not null or undefined
+            assertParamExists('getImageHashHashImagePost', 'apiFile', apiFile)
+            const localVarPath = `/hash/image`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (method !== undefined) {
+                localVarQueryParameter['method'] = method;
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(apiFile, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * HashApi - functional programming interface
+ * @export
+ */
+export const HashApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = HashApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Returns image hash
+         * @summary Get Image Hash
+         * @param {ApiFile} apiFile 
+         * @param {HashMethod} [method] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getImageHashHashImagePost(apiFile: ApiFile, method?: HashMethod, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getImageHashHashImagePost(apiFile, method, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * HashApi - factory interface
+ * @export
+ */
+export const HashApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = HashApiFp(configuration)
+    return {
+        /**
+         * Returns image hash
+         * @summary Get Image Hash
+         * @param {ApiFile} apiFile 
+         * @param {HashMethod} [method] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getImageHashHashImagePost(apiFile: ApiFile, method?: HashMethod, options?: any): AxiosPromise<any> {
+            return localVarFp.getImageHashHashImagePost(apiFile, method, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * HashApi - object-oriented interface
+ * @export
+ * @class HashApi
+ * @extends {BaseAPI}
+ */
+export class HashApi extends BaseAPI {
+    /**
+     * Returns image hash
+     * @summary Get Image Hash
+     * @param {ApiFile} apiFile 
+     * @param {HashMethod} [method] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof HashApi
+     */
+    public getImageHashHashImagePost(apiFile: ApiFile, method?: HashMethod, options?: any) {
+        return HashApiFp(this.configuration).getImageHashHashImagePost(apiFile, method, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
  * ImagesApi - axios parameter creator
  * @export
  */
@@ -747,47 +862,6 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
             setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Returns image hash
-         * @summary Get Image Hash
-         * @param {ApiFile} apiFile 
-         * @param {HashMethod} [method] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getImageHashImagesHashPost: async (apiFile: ApiFile, method?: HashMethod, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'apiFile' is not null or undefined
-            assertParamExists('getImageHashImagesHashPost', 'apiFile', apiFile)
-            const localVarPath = `/images/hash`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (method !== undefined) {
-                localVarQueryParameter['method'] = method;
-            }
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(apiFile, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -919,18 +993,6 @@ export const ImagesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Returns image hash
-         * @summary Get Image Hash
-         * @param {ApiFile} apiFile 
-         * @param {HashMethod} [method] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getImageHashImagesHashPost(apiFile: ApiFile, method?: HashMethod, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getImageHashImagesHashPost(apiFile, method, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Get images with given comma-separated ids
          * @summary Get Images
          * @param {string} imageIds 
@@ -995,17 +1057,6 @@ export const ImagesApiFactory = function (configuration?: Configuration, basePat
          */
         getAllImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any): AxiosPromise<CursorPageTaggedImage> {
             return localVarFp.getAllImagesImagesGet(tags, author, next, size, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Returns image hash
-         * @summary Get Image Hash
-         * @param {ApiFile} apiFile 
-         * @param {HashMethod} [method] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getImageHashImagesHashPost(apiFile: ApiFile, method?: HashMethod, options?: any): AxiosPromise<any> {
-            return localVarFp.getImageHashImagesHashPost(apiFile, method, options).then((request) => request(axios, basePath));
         },
         /**
          * Get images with given comma-separated ids
@@ -1075,19 +1126,6 @@ export class ImagesApi extends BaseAPI {
      */
     public getAllImagesImagesGet(tags?: Array<string>, author?: string, next?: string, size?: number, options?: any) {
         return ImagesApiFp(this.configuration).getAllImagesImagesGet(tags, author, next, size, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Returns image hash
-     * @summary Get Image Hash
-     * @param {ApiFile} apiFile 
-     * @param {HashMethod} [method] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ImagesApi
-     */
-    public getImageHashImagesHashPost(apiFile: ApiFile, method?: HashMethod, options?: any) {
-        return ImagesApiFp(this.configuration).getImageHashImagesHashPost(apiFile, method, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
