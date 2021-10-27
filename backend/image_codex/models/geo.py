@@ -8,4 +8,5 @@ class GeoImage(BaseModel):
     url: str
     latitude: float
     longitude: float
+    author: str
     tags: List[str]

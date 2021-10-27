@@ -10,7 +10,11 @@
       :lat-lng="[image.latitude, image.longitude]"
       @click="onClickTooltip(image)"
     >
-      <l-icon :icon-url="image.url" :iconSize="[64, 64]"></l-icon>
+      <l-icon
+        :class-name="getClassName(image)"
+        :icon-url="image.url"
+        :iconSize="[64, 64]"
+      ></l-icon>
     </l-marker>
     <v-dialog v-model="imageDialog" max-width="512">
       <v-card v-if="selectedImage">
@@ -37,6 +41,12 @@
 .leaflet-container {
   height: 1024px;
   z-index: 0;
+}
+</style>
+<style>
+.my-image {
+  border-style: solid;
+  border-color: var(--v-primary-base);
 }
 </style>
 
@@ -66,6 +76,14 @@ export default class TerritoryMap extends Vue {
       .then((images) => {
         this.images = images;
       });
+  }
+
+  getClassName(image: GeoImage): string {
+    if (image.author === this.$store.state.username) {
+      return "my-image";
+    } else {
+      return "";
+    }
   }
 
   onClickTooltip(image: GeoImage): void {

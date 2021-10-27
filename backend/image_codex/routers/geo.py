@@ -34,6 +34,7 @@ async def get_images(count: int = Query(500)) -> List[GeoImage]:
         latitude: Optional[str] = context.get(MetadataKey.GPS_LATITUDE.value)
         longitude: Optional[str] = context.get(
             MetadataKey.GPS_LONGITUDE.value)
+        author = context.get(MetadataKey.ARTIST.value)
         tags: List[str] = resource.get('tags', [])
         if latitude is not None and longitude is not None:
             images.append(GeoImage(
@@ -41,6 +42,7 @@ async def get_images(count: int = Query(500)) -> List[GeoImage]:
                 url=resource.get('secure_url'),
                 latitude=float(latitude),
                 longitude=float(longitude),
+                author=author,
                 tags=tags
             ))
     return images
