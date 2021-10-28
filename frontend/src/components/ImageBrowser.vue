@@ -57,6 +57,7 @@
     <image-editor-dialog ref="editDialog"></image-editor-dialog>
     <auth-confirm-dialog ref="editConfirmDialog"></auth-confirm-dialog>
     <auth-confirm-dialog ref="deleteConfirmDialog"></auth-confirm-dialog>
+    <snackbar ref="snackbar"></snackbar>
   </v-card>
 </template>
 
@@ -71,13 +72,16 @@ import { Vue, Component } from "vue-property-decorator";
 import TagSelector from "./TagSelector.vue";
 import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
 import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
+import Snackbar from "./Snackbar.vue";
 import { TaggedImage } from "@/backend";
+import { AxiosError } from "axios";
 
 @Component({
   components: {
     AuthConfirmDialog,
     ImageEditorDialog,
     TagSelector,
+    Snackbar,
   },
 })
 export default class ImageBrowser extends Vue {
@@ -142,7 +146,8 @@ export default class ImageBrowser extends Vue {
           )
       )
       .then(() => new Promise((f) => setTimeout(f, 1000)))
-      .then(() => this.initializeImages());
+      .then(() => this.initializeImages())
+      .catch(this.onApiError);
   }
 
   deleteImage(id: string): void {
@@ -155,7 +160,13 @@ export default class ImageBrowser extends Vue {
           auth: credential,
         })
       )
-      .then(() => this.initializeImages());
+      .then(() => this.initializeImages())
+      .catch(this.onApiError);
+  }
+
+  private onApiError(error: AxiosError): void {
+    const snackbar: Snackbar = this.$refs.snackbar as Snackbar;
+    snackbar.show(error.response?.data.detail ?? error);
   }
 }
 </script>
