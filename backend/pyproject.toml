@@ -2,7 +2,9 @@
 name = "image-codex"
 version = "0.1.0"
 description = ""
+license = "GPL-3.0-or-later"
 authors = ["David Tang <david.tang@epfl.ch>"]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
