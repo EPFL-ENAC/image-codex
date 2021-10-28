@@ -51,6 +51,7 @@
     <v-main>
       <router-view />
     </v-main>
+    <snackbar ref="snackbar"></snackbar>
   </v-app>
 </template>
 
@@ -64,12 +65,30 @@ html {
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import Snackbar from "./components/Snackbar.vue";
 import { LocalStorageKey } from "./utils/contants";
 
-@Component
+@Component({
+  components: {
+    Snackbar,
+  },
+})
 export default class App extends Vue {
   languages = ["en", "de"];
   usernameDialog = !this.username;
+
+  mounted(): void {
+    const snackbar: Snackbar = this.$refs.snackbar as Snackbar;
+    this.$store.watch(
+      (state) => state.snackbar,
+      (message) => {
+        if (message) {
+          snackbar.open(message);
+          this.$store.commit("setSnackbar", "");
+        }
+      }
+    );
+  }
 
   get username(): string {
     return this.$store.state.username;

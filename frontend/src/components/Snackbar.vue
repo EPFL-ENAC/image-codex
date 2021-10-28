@@ -18,7 +18,7 @@ export default class Snackbar extends Vue {
   snackbar = false;
   message = "";
 
-  show(message: string): void {
+  open(message: string): void {
     this.message = message;
     this.snackbar = true;
   }

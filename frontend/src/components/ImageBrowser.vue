@@ -57,7 +57,6 @@
     <image-editor-dialog ref="editDialog"></image-editor-dialog>
     <auth-confirm-dialog ref="editConfirmDialog"></auth-confirm-dialog>
     <auth-confirm-dialog ref="deleteConfirmDialog"></auth-confirm-dialog>
-    <snackbar ref="snackbar"></snackbar>
   </v-card>
 </template>
 
@@ -72,7 +71,6 @@ import { Vue, Component } from "vue-property-decorator";
 import TagSelector from "./TagSelector.vue";
 import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
 import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
-import Snackbar from "./Snackbar.vue";
 import { TaggedImage } from "@/backend";
 import { AxiosError } from "axios";
 
@@ -81,7 +79,6 @@ import { AxiosError } from "axios";
     AuthConfirmDialog,
     ImageEditorDialog,
     TagSelector,
-    Snackbar,
   },
 })
 export default class ImageBrowser extends Vue {
@@ -164,9 +161,8 @@ export default class ImageBrowser extends Vue {
       .catch(this.onApiError);
   }
 
-  private onApiError(error: AxiosError): void {
-    const snackbar: Snackbar = this.$refs.snackbar as Snackbar;
-    snackbar.show(error.response?.data.detail ?? error);
+  onApiError(error: AxiosError): void {
+    this.$store.commit("setSnackbar", error.response?.data.detail ?? error);
   }
 }
 </script>
