@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -6,3 +8,5 @@ class GeoImage(BaseModel):
     url: str
     latitude: float
     longitude: float
+    author: str
+    tags: List[str]

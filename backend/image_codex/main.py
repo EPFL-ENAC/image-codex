@@ -2,38 +2,18 @@
 Entrypoint for FastAPI application
 https://fastapi.tiangolo.com/tutorial/bigger-applications/
 """
-import configparser
-import os
-
 import cloudinary
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination.api import add_pagination
 
 from image_codex import __name__, __version__
-from image_codex.routers import compositions, geo, images, root, tags
-
-#######################
-# Configuration Setup #
-#######################
-
-
-class EnvInterpolation(configparser.BasicInterpolation):
-    def before_get(self, parser, section, option, value, defaults):
-        value = super().before_get(parser, section, option, value, defaults)
-        return os.path.expandvars(value)
-
-
-config = configparser.ConfigParser(interpolation=EnvInterpolation())
-config.read('image_codex/config.ini')
-
+from image_codex.routers import compositions, geo, hash, images, root, tags
+from image_codex.utils import cloudinary_config, fast_api_config
 
 #########################
 # FastAPI Configuration #
 #########################
-
-
-fast_api_config = config['fast_api']
 
 app = FastAPI(
     title=__name__,
@@ -72,18 +52,16 @@ else:
 app.include_router(root.router)
 app.include_router(compositions.router)
 app.include_router(geo.router)
+app.include_router(hash.router)
 app.include_router(images.router)
 app.include_router(tags.router)
 
 add_pagination(app)
 
-
 ############################
 # Cloudinary Configuration #
 ############################
 
-
-cloudinary_config = config['cloudinary']
 
 cloudinary.config(
     cloud_name=cloudinary_config.get('cloud_name'),

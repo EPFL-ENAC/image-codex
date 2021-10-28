@@ -21,14 +21,14 @@
         }
       }
     },
-    "/compositions/": {
+    "/compositions": {
       "post": {
         "tags": [
           "compositions"
         ],
         "summary": "Create Composition",
         "description": "Create an image composition and return it in the given type",
-        "operationId": "create_composition_compositions__post",
+        "operationId": "create_composition_compositions_post",
         "parameters": [
           {
             "required": false,
@@ -76,20 +76,20 @@
       }
     },
     "/geo/images": {
-      "post": {
+      "get": {
         "tags": [
           "geo"
         ],
         "summary": "Get Images",
-        "description": "Get images in GeoJSON format",
-        "operationId": "get_images_geo_images_post",
+        "description": "Get list of GeoImages",
+        "operationId": "get_images_geo_images_get",
         "parameters": [
           {
             "required": false,
             "schema": {
               "title": "Count",
               "type": "integer",
-              "default": 10
+              "default": 500
             },
             "name": "count",
             "in": "query"
@@ -101,7 +101,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Get Images Geo Images Post",
+                  "title": "Response Get Images Geo Images Get",
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/GeoImage"
@@ -123,14 +123,69 @@
         }
       }
     },
-    "/images/": {
+    "/hash/image": {
+      "post": {
+        "tags": [
+          "hash"
+        ],
+        "summary": "Get Image Hash",
+        "description": "Returns image hash",
+        "operationId": "get_image_hash_hash_image_post",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/HashMethod"
+                }
+              ],
+              "default": "phash"
+            },
+            "name": "method",
+            "in": "query"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/images": {
       "get": {
         "tags": [
           "images"
         ],
         "summary": "Get All Images",
         "description": "Get images with filters:\n- **tags**: contains all given tags\n- **author**: has given author",
-        "operationId": "get_all_images_images__get",
+        "operationId": "get_all_images_images_get",
         "parameters": [
           {
             "required": false,
@@ -205,7 +260,7 @@
         ],
         "summary": "Create Image",
         "description": "Upload a new image to the database",
-        "operationId": "create_image_images__post",
+        "operationId": "create_image_images_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -236,6 +291,64 @@
             }
           }
         }
+      }
+    },
+    "/images/{image_id}": {
+      "post": {
+        "tags": [
+          "images"
+        ],
+        "summary": "Update Image",
+        "description": "Update following fields of an image:\n* tags",
+        "operationId": "update_image_images__image_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Image Id",
+              "type": "string"
+            },
+            "name": "image_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaggedImage"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaggedImage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
       }
     },
     "/images/{image_ids}": {
@@ -321,24 +434,29 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
       }
     },
-    "/tags/": {
+    "/tags": {
       "get": {
         "tags": [
           "tags"
         ],
         "summary": "Get Tags",
         "description": "Get all tags",
-        "operationId": "get_tags_tags__get",
+        "operationId": "get_tags_tags_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Get Tags Tags  Get",
+                  "title": "Response Get Tags Tags Get",
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -493,7 +611,9 @@
           "id",
           "url",
           "latitude",
-          "longitude"
+          "longitude",
+          "author",
+          "tags"
         ],
         "type": "object",
         "properties": {
@@ -512,6 +632,17 @@
           "longitude": {
             "title": "Longitude",
             "type": "number"
+          },
+          "author": {
+            "title": "Author",
+            "type": "string"
+          },
+          "tags": {
+            "title": "Tags",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -527,6 +658,14 @@
             }
           }
         }
+      },
+      "HashMethod": {
+        "title": "HashMethod",
+        "enum": [
+          "phash"
+        ],
+        "type": "string",
+        "description": "An enumeration."
       },
       "TaggedImage": {
         "title": "TaggedImage",
@@ -604,6 +743,12 @@
             "type": "string"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "HTTPBasic": {
+        "type": "http",
+        "scheme": "basic"
       }
     }
   }

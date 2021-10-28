@@ -1,13 +1,18 @@
-import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
+
+import Vue from "vue";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: "/",
-    name: "Home",
-    component: () => import("../views/Home.vue"),
+    redirect: "/territory",
+  },
+  {
+    path: "/territory",
+    name: "Territory",
+    component: () => import("../views/Territory.vue"),
   },
   {
     path: "/upload",

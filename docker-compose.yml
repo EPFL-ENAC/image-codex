@@ -28,6 +28,7 @@ services:
     env_file: secrets/backend.env
     environment:
       MODULE_NAME: image_codex.main
+      FORWARDED_ALLOW_IPS: '*'
       ROOT_PATH: /api
       CORS_ENABLED: "true"
       CLOUDINARY_FOLDER: image-codex-prod

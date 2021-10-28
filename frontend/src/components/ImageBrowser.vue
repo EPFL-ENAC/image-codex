@@ -8,7 +8,6 @@
       <v-text-field
         v-model="author"
         label="Author"
-        clearable
         @change="initializeImages"
       ></v-text-field>
       <v-row>
@@ -29,10 +28,18 @@
               </v-chip>
             </v-chip-group>
             <v-card-actions>
-              <v-btn color="primary" icon @click="$emit('add', item)">
+              <v-btn
+                color="primary"
+                title="Add to composition"
+                icon
+                @click="$emit('add', item)"
+              >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
-              <v-btn icon @click="deleteImage(item.id)">
+              <v-btn icon title="Edit" @click="editImage(item)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn icon title="Delete" @click="deleteImage(item.id)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </v-card-actions>
@@ -47,27 +54,34 @@
         </v-col>
       </v-row>
     </v-card-text>
-    <confirm-dialog ref="confirmDialog"></confirm-dialog>
+    <image-editor-dialog ref="editDialog"></image-editor-dialog>
+    <auth-confirm-dialog ref="editConfirmDialog"></auth-confirm-dialog>
+    <auth-confirm-dialog ref="deleteConfirmDialog"></auth-confirm-dialog>
+    <snackbar ref="snackbar"></snackbar>
   </v-card>
 </template>
 
 <style scoped>
 .scrollable {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 </style>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import { paramsSerializer } from "@/utils/functions";
 import TagSelector from "./TagSelector.vue";
-import ConfirmDialog from "./ConfirmDialog.vue";
-import { CursorPageTaggedImage, TaggedImage } from "@/backend";
+import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
+import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
+import Snackbar from "./Snackbar.vue";
+import { TaggedImage } from "@/backend";
+import { AxiosError } from "axios";
 
 @Component({
   components: {
-    ConfirmDialog,
+    AuthConfirmDialog,
+    ImageEditorDialog,
     TagSelector,
+    Snackbar,
   },
 })
 export default class ImageBrowser extends Vue {
@@ -91,16 +105,13 @@ export default class ImageBrowser extends Vue {
   }
 
   private updateItems(callback: (images: TaggedImage[]) => void) {
-    this.$http
-      .get<CursorPageTaggedImage>("/images", {
-        params: {
-          size: this.pageSize,
-          next: this.next,
-          tags: this.selectedTags,
-          author: this.author ? this.author : undefined,
-        },
-        paramsSerializer: paramsSerializer,
-      })
+    this.$imagesApi
+      .getAllImagesImagesGet(
+        this.selectedTags,
+        this.author ? this.author : undefined,
+        this.next,
+        this.pageSize
+      )
       .then((response) => {
         this.next = response.data.next;
         this.imagesCount = response.data.total;
@@ -118,14 +129,44 @@ export default class ImageBrowser extends Vue {
     this.updateItems((images) => this.images.push(...images));
   }
 
+  editImage(image: TaggedImage): void {
+    const dialog: ImageEditorDialog = this.$refs
+      .editDialog as ImageEditorDialog;
+    const confirmDialog: AuthConfirmDialog = this.$refs
+      .editConfirmDialog as AuthConfirmDialog;
+    dialog
+      .open(image)
+      .then((image) =>
+        confirmDialog
+          .open(`Image ${image.id} will be modified on the server.`)
+          .then((credential) =>
+            this.$imagesApi.updateImageImagesImageIdPost(image.id, image, {
+              auth: credential,
+            })
+          )
+      )
+      .then(() => new Promise((f) => setTimeout(f, 1000)))
+      .then(() => this.initializeImages())
+      .catch(this.onApiError);
+  }
+
   deleteImage(id: string): void {
-    const confirmDialog: ConfirmDialog = this.$refs
-      .confirmDialog as ConfirmDialog;
-    confirmDialog.open(`image ${id} will be deleted`).then((confirmed) => {
-      if (confirmed) {
-        this.$http.delete(`images/${id}`).then(() => this.initializeImages());
-      }
-    });
+    const dialog: AuthConfirmDialog = this.$refs
+      .deleteConfirmDialog as AuthConfirmDialog;
+    dialog
+      .open(`Image ${id} will be permanently deleted from the server.`)
+      .then((credential) =>
+        this.$imagesApi.deleteImagesImagesImageIdsDelete(id, {
+          auth: credential,
+        })
+      )
+      .then(() => this.initializeImages())
+      .catch(this.onApiError);
+  }
+
+  private onApiError(error: AxiosError): void {
+    const snackbar: Snackbar = this.$refs.snackbar as Snackbar;
+    snackbar.show(error.response?.data.detail ?? error);
   }
 }
 </script>

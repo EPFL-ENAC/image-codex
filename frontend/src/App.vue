@@ -47,7 +47,7 @@
       <!-- NavBar -->
       <template v-slot:extension>
         <v-tabs>
-          <v-tab to="/">Home</v-tab>
+          <v-tab to="/territory">Territory</v-tab>
           <v-tab to="/upload">Upload</v-tab>
           <v-tab to="/workspace">Workspace</v-tab>
           <v-tab to="/about">About</v-tab>
@@ -60,6 +60,13 @@
   </v-app>
 </template>
 
+<style>
+/* https://vuetifyjs.com/en/getting-started/frequently-asked-questions/#scrollbar-overflow */
+html {
+  overflow-y: auto !important;
+}
+</style>
+
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -70,17 +77,17 @@ export default class App extends Vue {
   languages = ["en", "de"];
   usernameDialog = !this.username; 
 
-  setLanguage(language: string): void {
-    this.$i18n.locale = language; 
-    localStorage.setItem(LocalStorageKey.Language, language);
-  }
-
   get username(): string {
     return this.$store.state.username;
   }
 
   set username(value: string) {
     this.$store.commit("setUsername", value);
+  }
+
+  setLanguage(language: string): void {
+    this.$i18n.locale = language;
+    localStorage.setItem(LocalStorageKey.Language, language);
   }
 }
 </script>

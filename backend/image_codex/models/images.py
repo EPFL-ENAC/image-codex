@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from pydantic import BaseModel
@@ -12,3 +13,7 @@ class TaggedImage(BaseModel):
     tags: List[str]
     author: str
     license: str
+
+
+class HashMethod(str, Enum):
+    phash = 'phash'

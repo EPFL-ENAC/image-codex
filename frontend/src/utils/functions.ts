@@ -8,3 +8,7 @@ export function paramsSerializer(params: any): string {
 export function unique<T>(value: T, index: number, array: T[]): boolean {
   return array.indexOf(value) === index;
 }
+
+export function mapDataUrlToBase64(dataUrl: string): string {
+  return dataUrl.startsWith("data:") ? dataUrl.split(",")[1] : dataUrl;
+}

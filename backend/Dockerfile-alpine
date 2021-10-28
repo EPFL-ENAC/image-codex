@@ -1,8 +1,10 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-slim
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-alpine3.14
 
-RUN apt-get update && apt-get install -y \
+RUN apk --no-cache add \
+    build-base \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    jpeg-dev \
+    zlib-dev
 
 # Install Poetry
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \

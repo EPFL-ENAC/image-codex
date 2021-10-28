@@ -41,15 +41,21 @@ import { unique } from "@/utils/functions";
 
 type Category = ComboboxItem | string;
 
+const TagSelectorProps = Vue.extend({
+  props: {
+    value: Array as () => string[],
+  },
+});
+
 @Component
-export default class TagSelector extends Vue {
-  value: string[] = [];
+export default class TagSelector extends TagSelectorProps {
   selectedCategories: Category[] = [];
   backendTags: string[] = [];
 
   created(): void {
-    this.$http
-      .get<string[]>("tags")
+    this.onValueChanged();
+    this.$tagsApi
+      .getTagsTagsGet()
       .then((response) => response.data)
       .then((tags) => {
         this.backendTags = tags;
@@ -104,9 +110,37 @@ export default class TagSelector extends Vue {
     });
   }
 
+  onValueChanged(): void {
+    const tags = this.value;
+    const inputTags = new Set(tags);
+    const comboboxItems = this.categoryComboboxItems.filter((item) =>
+      item.value.split(tagSeparator).every((tag) => inputTags.has(tag))
+    );
+    const itemValues = comboboxItems.map((item) => item.value);
+    // keep only children
+    this.selectedCategories = comboboxItems.filter(
+      (item) =>
+        !itemValues
+          .filter((value) => value !== item.value)
+          .some((value) => value.startsWith(item.value))
+    );
+    const addedTags = new Set(this.selectedTags);
+    this.selectedCategories.push(...tags.filter((tag) => !addedTags.has(tag)));
+  }
+
   onChange(): void {
-    this.$emit("input", this.selectedTags);
-    this.$emit("change");
+    this.selectedCategories = this.selectedCategories
+      .map((category) => {
+        if (typeof category == "string") {
+          return category.toLowerCase().replaceAll(",", "").trim();
+        } else {
+          return category;
+        }
+      })
+      .filter((category) => category);
+    const tags = this.selectedTags;
+    this.$emit("input", tags);
+    this.$emit("change", tags);
   }
 
   getText(category: Category): string {

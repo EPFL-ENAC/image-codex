@@ -18,14 +18,15 @@
             "module": "uvicorn",
             "args": [
                 "image_codex.main:app",
-                "--reload"
+                "--reload",
             ],
             "jinja": true,
             "cwd": "${workspaceFolder}/backend",
             "env": {
                 "ROOT_PATH": "",
                 "CORS_ENABLED": "false"
-            }
+            },
+            "envFile": "${workspaceFolder}/secrets/backend.env"
         }
     ]
 }

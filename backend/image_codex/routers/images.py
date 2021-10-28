@@ -8,13 +8,13 @@ from typing import Any, Dict, List, Optional
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
+import imagehash
 from exif import Image as ExifImage
-from fastapi import APIRouter
-from fastapi.param_functions import Depends, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi_pagination.bases import AbstractPage
 from image_codex.models import ApiFile, CursorPage, CursorParams, TaggedImage
 from image_codex.utils import (CLOUDINARY_FOLDER, MetadataKey, get_pil_format,
-                               map_dms_to_dd, map_id_to_public_id,
+                               is_admin, map_dms_to_dd, map_id_to_public_id,
                                map_public_id_to_id)
 from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS
@@ -25,7 +25,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 async def create_image(body: ApiFile):
     """
     Upload a new image to the database
@@ -33,10 +33,10 @@ async def create_image(body: ApiFile):
     with BytesIO(base64.b64decode(body.base64)) as file:
         exif_image = ExifImage(file)
         with Image.open(file) as image:
+            hash: str = str(imagehash.phash(image))
             image = ImageOps.exif_transpose(image)
             exif = image.getexif()
-            exif_data = {TAGS.get(tag_id, tag_id):
-                         __get_tag_value(tag_id, value)
+            exif_data = {TAGS.get(tag_id, tag_id): __get_tag_value(value)
                          for tag_id, value in exif.items()}
             tags = [tag.strip()
                     for tag
@@ -47,22 +47,25 @@ async def create_image(body: ApiFile):
                 MetadataKey.ARTIST.value: artist,
                 MetadataKey.COPYRIGHT.value: copyright,
                 MetadataKey.GPS_LATITUDE.value:
-                    map_dms_to_dd(*exif_image.get('gps_latitude')),
+                    map_dms_to_dd(exif_image.get('gps_latitude'),
+                                  exif_image.get('gps_latitude_ref')),
                 MetadataKey.GPS_LONGITUDE.value:
-                    map_dms_to_dd(*exif_image.get('gps_longitude')),
+                    map_dms_to_dd(exif_image.get('gps_longitude'),
+                                  exif_image.get('gps_longitude_ref')),
             }
             with BytesIO() as new_file:
                 image.save(new_file, get_pil_format(body.type))
                 new_file.seek(0)
                 print(f'uploading {image.format} file to {CLOUDINARY_FOLDER}')
-                return cloudinary.uploader.upload(folder=CLOUDINARY_FOLDER,
-                                                  file=new_file,
-                                                  image_metadata=True,
-                                                  tags=tags,
-                                                  context=context)
+                return cloudinary.uploader.upload(
+                    public_id=f'{CLOUDINARY_FOLDER}/{hash}',
+                    file=new_file,
+                    image_metadata=True,
+                    tags=tags,
+                    context=context)
 
 
-@router.get('/', response_model=CursorPage[TaggedImage])
+@router.get('', response_model=CursorPage[TaggedImage])
 async def get_all_images(params: CursorParams = Depends(),
                          tags: List[str] = Query([]),
                          author: Optional[str] = Query(None),
@@ -92,6 +95,20 @@ async def get_all_images(params: CursorParams = Depends(),
     return CursorPage.create(images, total_count, params)
 
 
+@router.post('/{image_id}',
+             dependencies=[Depends(is_admin)],
+             response_model=TaggedImage)
+async def update_image(image_id: str, body: TaggedImage) -> TaggedImage:
+    """
+    Update following fields of an image:
+    * tags
+    """
+    public_id = map_id_to_public_id(image_id)
+    resource = cloudinary.api.update(public_id,
+                                     tags=body.tags)
+    return __get_admin_response_image(resource)
+
+
 @router.get('/{image_ids}', response_model=List[TaggedImage])
 async def get_images(image_ids: str) -> List[TaggedImage]:
     """
@@ -106,7 +123,8 @@ async def get_images(image_ids: str) -> List[TaggedImage]:
             for resource in resources]
 
 
-@router.delete('/{image_ids}')
+@router.delete('/{image_ids}',
+               dependencies=[Depends(is_admin)])
 async def delete_images(image_ids: str) -> List[str]:
     """
     Delete images with given comma-separated ids
@@ -119,7 +137,7 @@ async def delete_images(image_ids: str) -> List[str]:
             if value == 'deleted']
 
 
-def __get_tag_value(tag_id: int, value: Any) -> str:
+def __get_tag_value(value: Any) -> str:
     if isinstance(value, bytes):
         return value.decode()
     elif isinstance(value, str):

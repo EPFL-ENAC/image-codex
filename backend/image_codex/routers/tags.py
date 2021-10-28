@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get('/', response_model=List[str])
+@router.get('', response_model=List[str])
 async def get_tags() -> List[str]:
     """
     Get all tags
