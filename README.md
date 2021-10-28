@@ -1,6 +1,16 @@
 # Image Codex
 
-https://image-codex-enac.epfl.ch/
+https://image-codex-enac.epfl.ch/ (must be on EPFL network)
+
+Version: 0.1 (prototype)
+
+The Image Codex is a web-based tool and database to improve image-based teaching methods. The database aims to serve as architectural reference, where images will be tagged based on the hierarchical metadata scheme. Users should be able to browse, display, tag, upload and download images as well as create compositions of images.
+
+
+## Documentation
+
+- [Backend](https://image-codex-enac.epfl.ch/api/docs)
+- [Cloudinary](https://cloudinary.com/documentation/admin_api)
 
 ## Development
 
@@ -23,10 +33,10 @@ make install
 
 ```bash
 make run-backend
-# http://127.0.0.1:8080
+# http://127.0.0.1:8000
 
 make run-frontend
-# http://127.0.0.1:8000
+# http://127.0.0.1:8080
 ```
 
 #### Visual Studio Code
@@ -66,3 +76,4 @@ ansible-playbook ansible/install.yml -i ansible/inventory.ini
 # Deploy
 make deploy-server
 ```
+## License

@@ -162,6 +162,7 @@ export default class CompositionEditor extends Vue {
   static readonly defaultName = "composition";
   static readonly defaultWidth = 1123;
   static readonly defaultHeight = 794;
+  static readonly defaultName = "Composition";
   composition: Composition = this.getCompositionOrDefault();
   showActions = true;
   showTags = false;

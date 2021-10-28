@@ -18,7 +18,9 @@ router = APIRouter(
 @router.get('/images', response_model=List[GeoImage])
 async def get_images(count: int = Query(500)) -> List[GeoImage]:
     """
-    Get list of GeoImages
+    Get images from Cloudinary API, 
+    Returns:
+        List of GeoImage.
     """
     resources: List[Dict[str, Any]] = cloudinary.api.resources(
         prefix=CLOUDINARY_FOLDER + '/',
