@@ -46,3 +46,11 @@ jobs:
         run: poetry install --no-interaction --no-root
       - run: poetry build
       - run: poetry run pytest
+  build-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          mkdir secrets
+          touch secrets/backend.env
+      - run: docker-compose build
