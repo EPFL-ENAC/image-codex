@@ -1,8 +1,8 @@
-import os
 from enum import Enum
-from typing import Any
 
-CLOUDINARY_FOLDER = os.getenv('CLOUDINARY_FOLDER', 'image-codex')
+from image_codex.config import settings
+
+CLOUDINARY_FOLDER = settings.get('cloudinary_folder')
 
 
 class MetadataKey(Enum):

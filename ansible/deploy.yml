@@ -2,6 +2,8 @@
 - name: Image Codex - Deploy
   hosts: image_codex
   remote_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
 
   tasks:
     - name: Upgrade packages

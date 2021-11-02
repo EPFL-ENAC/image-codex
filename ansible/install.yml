@@ -2,6 +2,8 @@
 - name: Image Codex - Install
   hosts: image_codex
   remote_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
 
   tasks:
     - name: Upgrade packages
@@ -26,7 +28,6 @@
         repo: deb https://download.docker.com/linux/ubuntu focal stable
     - name: Install Docker
       apt:
-        update_cache: yes
         pkg:
           - docker-ce
           - docker-ce-cli

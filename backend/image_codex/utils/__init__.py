@@ -4,7 +4,6 @@ Shared constants and functions
 from typing import Tuple
 
 from .cloudinary import *  # noqa: F401,F403
-from .config import *  # noqa: F401,F403
 from .fastapi import *  # noqa: F401,F403
 from .pil import *  # noqa: F401,F403
 
