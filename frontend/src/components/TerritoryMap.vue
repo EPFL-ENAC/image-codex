@@ -1,9 +1,11 @@
 <template>
+<div>
   <l-map :center="[46.8, 8.1]" :zoom="8">
     <l-tile-layer
       url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
       attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
     ></l-tile-layer>
+    <l-control-scale position="topright" :imperial="false" :metric="true"></l-control-scale>
     <l-marker
       v-for="image in images"
       :key="image.id"
@@ -34,13 +36,35 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </l-map>
+  <!--Legende-->
+    <v-row no-gutters>
+      <v-col >
+      <div class="legend"></div></v-col>
+      <v-col  cols="11" class="pa-1" > = your pictures</v-col>
+    </v-row>
+  </div>
 </template>
 
 <style scoped>
 .leaflet-container {
   height: 1024px;
   z-index: 0;
+}
+
+.legend{
+  height: 40px;
+  width: 40px;
+  border-style: solid;
+  border-color: var(--v-primary-base);
+  margin-left: 100px;
+  
+}
+
+.position{
+  flex :1;
+  display: flex;
 }
 </style>
 <style>
@@ -53,7 +77,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { LMap, LTileLayer, LMarker, LIcon } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LIcon, LControlScale } from "vue2-leaflet";
 import { GeoImage } from "@/backend";
 
 @Component({
@@ -62,6 +86,7 @@ import { GeoImage } from "@/backend";
     LTileLayer,
     LMarker,
     LIcon,
+    LControlScale
   },
 })
 export default class TerritoryMap extends Vue {

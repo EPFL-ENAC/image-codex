@@ -1,7 +1,10 @@
 <template>
   <v-container>
-    <h1>Image Codex</h1>
+  <div >
+    <h1>Territory Map</h1>
+    </div>
     <territory-map></territory-map>
+  
   </v-container>
 </template>
 
