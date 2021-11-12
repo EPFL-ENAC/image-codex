@@ -1,10 +1,15 @@
 <template>
   <v-container>
-  <div >
-    <h1>Territory Map</h1>
-    </div>
-    <territory-map></territory-map>
-  
+    <v-row>
+      <v-col>
+        <h1>Territory Map</h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <territory-map></territory-map>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
