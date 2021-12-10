@@ -130,6 +130,15 @@
       </v-btn>
       <v-btn text @click="resetSize">Reset size</v-btn>
     </v-card-actions>
+    <ul v-if="errors.length">
+      <li
+        class="red--text text--lighten-2"
+        v-for="error in errors"
+        :key="error"
+      >
+        {{ error }}
+      </li>
+    </ul>
   </v-card>
 </template>
 
@@ -167,6 +176,7 @@ export default class CompositionEditor extends Vue {
   showTags = false;
   gridSize = 5;
   images: Map<string, TaggedImage> = new Map();
+  errors = [];
 
   private getCompositionOrDefault(): Composition {
     const value = localStorage.getItem(LocalStorageKey.Composition);
@@ -214,6 +224,10 @@ export default class CompositionEditor extends Vue {
   }
 
   get isValid(): boolean {
+    this.errors = [];
+    if (this.composition.name.length == 0) {
+      this.errors.push("Name requiered");
+    }
     return (
       this.composition.name.length > 0 && this.composition.images.length > 0
     );
