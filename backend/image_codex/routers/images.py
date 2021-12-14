@@ -43,6 +43,7 @@ async def create_image(body: ApiFile):
                     in exif_data.get('ImageDescription', '').split(',')]
             artist = exif_data.get('Artist')
             copyright = exif_data.get('Copyright')
+
             context: Dict[str, Any] = {
                 MetadataKey.ARTIST.value: artist,
                 MetadataKey.COPYRIGHT.value: copyright,
@@ -53,6 +54,7 @@ async def create_image(body: ApiFile):
                     map_dms_to_dd(exif_image.get('gps_longitude'),
                                   exif_image.get('gps_longitude_ref')),
             }
+            context = {k: v for k, v in context.items() if v is not None}
             with BytesIO() as new_file:
                 image.save(new_file, get_pil_format(body.type))
                 new_file.seek(0)

@@ -39,8 +39,8 @@ async def get_images(count: int = Query(500)) -> List[GeoImage]:
             images.append(GeoImage(
                 id=map_public_id_to_id(resource.get('public_id', '')),
                 url=resource.get('secure_url'),
-                latitude=float(latitude),
-                longitude=float(longitude),
+                latitude=float(latitude) if latitude is not None else None,
+                longitude=float(longitude) if longitude is not None else None,
                 author=author,
                 tags=tags
             ))
