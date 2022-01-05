@@ -6,9 +6,9 @@
 </template>
 
 <script lang="ts">
+import TerritoryMap from "@/components/TerritoryMap.vue";
 import Vue from "vue";
 import Component from "vue-class-component";
-import TerritoryMap from "@/components/TerritoryMap.vue";
 
 @Component({
   components: {

@@ -24,9 +24,9 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
 import { TaggedImage } from "@/backend";
 import TagSelector from "@/components/TagSelector.vue";
+import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   components: {

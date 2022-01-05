@@ -103,10 +103,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
 import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
+import Vue from "vue";
+import Component from "vue-class-component";
 
 const ImageItemProps = Vue.extend({
   props: {

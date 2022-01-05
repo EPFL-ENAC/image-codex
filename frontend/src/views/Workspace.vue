@@ -10,11 +10,11 @@
 </template>
 
 <script lang="ts">
+import { TaggedImage } from "@/backend";
+import CompositionEditor from "@/components/CompositionEditor.vue";
+import ImageBrowser from "@/components/ImageBrowser.vue";
 import Vue from "vue";
 import Component from "vue-class-component";
-import ImageBrowser from "@/components/ImageBrowser.vue";
-import CompositionEditor from "@/components/CompositionEditor.vue";
-import { TaggedImage } from "@/backend";
 
 @Component({
   components: {

@@ -1,7 +1,6 @@
-import VueI18n, { LocaleMessages } from "vue-i18n";
-
-import { LocalStorageKey } from "./utils/contants";
 import Vue from "vue";
+import VueI18n, { LocaleMessages } from "vue-i18n";
+import { LocalStorageKey } from "./utils/contants";
 
 Vue.use(VueI18n);
 

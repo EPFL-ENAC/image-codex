@@ -1,5 +1,5 @@
-import piexif from "piexifjs";
 import { tagSeparator } from "@/utils/contants";
+import piexif from "piexifjs";
 
 export default class UploadImage {
   static readonly tagsAttributes: string[][] = [

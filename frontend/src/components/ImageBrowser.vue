@@ -20,8 +20,8 @@
             <v-chip-group class="mx-2" column>
               <v-chip
                 v-for="tag in item.tags"
-                :color="getTagColor(tag)"
                 :key="tag"
+                :color="getTagColor(tag)"
                 small
               >
                 {{ tag }}
@@ -67,12 +67,12 @@
 </style>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import TagSelector from "./TagSelector.vue";
-import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
-import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
 import { TaggedImage } from "@/backend";
 import { AxiosError } from "axios";
+import { Component, Vue } from "vue-property-decorator";
+import AuthConfirmDialog from "./dialog/AuthConfirmDialog.vue";
+import ImageEditorDialog from "./dialog/ImageEditorDialog.vue";
+import TagSelector from "./TagSelector.vue";
 
 @Component({
   components: {

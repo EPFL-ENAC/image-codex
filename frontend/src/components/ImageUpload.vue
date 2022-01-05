@@ -87,15 +87,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import download from "downloadjs";
-import ImageItem from "./ImageItem.vue";
-import UploadImage from "@/models/upload-image";
-import rules from "@/utils/rules";
-import TagSelector from "@/components/TagSelector.vue";
 import { ApiFile } from "@/backend";
+import TagSelector from "@/components/TagSelector.vue";
+import UploadImage from "@/models/upload-image";
 import { mapDataUrlToBase64 } from "@/utils/functions";
+import rules from "@/utils/rules";
+import download from "downloadjs";
 import { extension } from "mime-types";
+import { Component, Vue } from "vue-property-decorator";
+import ImageItem from "./ImageItem.vue";
 
 @Component({
   components: {

@@ -2,7 +2,7 @@
 
 Backend for Image Codex.
 
-API Documentation: 
+API Documentation:
 - http://localhost:8000/docs
 - https://image-codex-enac.epfl.ch/api/docs
 

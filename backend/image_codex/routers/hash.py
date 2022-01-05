@@ -6,19 +6,17 @@ from io import BytesIO
 
 import imagehash
 from fastapi import APIRouter, Query
-from image_codex.models import ApiFile, HashMethod
 from PIL import Image
 
-router = APIRouter(
-    prefix='/hash',
-    tags=['hash']
-)
+from image_codex.models import ApiFile, HashMethod
+
+router = APIRouter(prefix="/hash", tags=["hash"])
 
 
-@router.post('/image')
-async def get_image_hash(body: ApiFile,
-                         method: HashMethod = Query(HashMethod.phash)
-                         ) -> str:
+@router.post("/image")
+async def get_image_hash(
+    body: ApiFile, method: HashMethod = Query(HashMethod.phash)
+) -> str:
     """
     Returns image hash
     """

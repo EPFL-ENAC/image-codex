@@ -18,7 +18,7 @@ from image_codex.routers import compositions, geo, hash, images, root, tags
 app = FastAPI(
     title=__name__,
     version=__version__,
-    root_path=settings.get('root_path'),
+    root_path=settings.get("root_path"),
     openapi_tags=[
         {
             "name": "compositions",
@@ -38,17 +38,17 @@ app = FastAPI(
         },
     ],
 )
-if not settings.get('cors_enabled'):
-    print('cors disabled')
+if not settings.get("cors_enabled"):
+    print("cors disabled")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=['*'],
+        allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=['*'],
-        allow_headers=['*'],
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 else:
-    print('cors enabled')
+    print("cors enabled")
 app.include_router(root.router)
 app.include_router(compositions.router)
 app.include_router(geo.router)
@@ -64,7 +64,7 @@ add_pagination(app)
 
 
 cloudinary.config(
-    cloud_name=settings.get('cloudinary_cloud_name'),
-    api_key=settings.get('cloudinary_api_key'),
-    api_secret=settings.get('cloudinary_api_secret')
+    cloud_name=settings.get("cloudinary_cloud_name"),
+    api_key=settings.get("cloudinary_api_key"),
+    api_secret=settings.get("cloudinary_api_secret"),
 )
