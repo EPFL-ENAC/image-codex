@@ -8,6 +8,14 @@ run-backend:
 run-frontend:
 	$(MAKE) -C frontend run
 
+test:
+	$(MAKE) -C backend test
+	$(MAKE) -C frontend test
+
+lint:
+	$(MAKE) -C backend lint
+	$(MAKE) -C frontend lint
+
 deploy-local:
 	docker-compose build --pull
 	docker-compose up --remove-orphans

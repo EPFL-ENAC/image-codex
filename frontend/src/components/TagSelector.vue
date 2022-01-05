@@ -33,22 +33,19 @@
 </style>
 
 <script lang="ts">
-import { Vue, Component, Watch } from "vue-property-decorator";
 import categories from "@/assets/categories.yaml";
 import { CategoryNode, CategoryTree } from "@/models/category-tree";
 import { tagSeparator } from "@/utils/contants";
 import { unique } from "@/utils/functions";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 type Category = ComboboxItem | string;
 
-const TagSelectorProps = Vue.extend({
-  props: {
-    value: Array as () => string[],
-  },
-});
-
 @Component
-export default class TagSelector extends TagSelectorProps {
+export default class TagSelector extends Vue {
+  @Prop({ type: Array as () => string[], default: () => [] })
+  readonly value!: string[];
+
   selectedCategories: Category[] = [];
   backendTags: string[] = [];
 
