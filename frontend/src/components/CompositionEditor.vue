@@ -71,7 +71,7 @@
             :w="image.width"
             :h="image.height"
             :grid="[gridSize, gridSize]"
-            :lockAspectRatio="true"
+            :lock-aspect-ratio="true"
             :parent="true"
             @dragging="(x, y) => dragImage(index, x, y)"
             @resizing="
@@ -151,11 +151,11 @@
 </style>
 
 <script lang="ts">
+import { ComposedImage, Composition, TaggedImage } from "@/backend";
+import { LocalStorageKey } from "@/utils/contants";
+import download from "downloadjs";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { ComposedImage, Composition, TaggedImage } from "@/backend";
-import download from "downloadjs";
-import { LocalStorageKey } from "@/utils/contants";
 
 @Component
 export default class CompositionEditor extends Vue {

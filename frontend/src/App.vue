@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="usernameDialog" max-width="256" persistent>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" text>
+          <v-btn v-bind="attrs" text v-on="on">
             {{ username }}
           </v-btn>
         </template>
@@ -25,7 +25,7 @@
       </v-dialog>
       <v-menu>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" text>
+          <v-btn v-bind="attrs" text v-on="on">
             {{ $i18n.locale }}
           </v-btn>
         </template>

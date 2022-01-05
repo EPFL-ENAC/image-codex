@@ -1,2 +1,2 @@
-__name__ = 'Image Codex'
-__version__ = '0.1.0'
+__name__ = "Image Codex"
+__version__ = "0.1.0"

@@ -13,7 +13,7 @@
       <l-icon
         :class-name="getClassName(image)"
         :icon-url="image.url"
-        :iconSize="[64, 64]"
+        :icon-size="[64, 64]"
       ></l-icon>
     </l-marker>
     <v-dialog v-model="imageDialog" max-width="512">
@@ -51,10 +51,10 @@
 </style>
 
 <script lang="ts">
+import { GeoImage } from "@/backend";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { LMap, LTileLayer, LMarker, LIcon } from "vue2-leaflet";
-import { GeoImage } from "@/backend";
+import { LIcon, LMap, LMarker, LTileLayer } from "vue2-leaflet";
 
 @Component({
   components: {

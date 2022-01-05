@@ -16,4 +16,4 @@ class TaggedImage(BaseModel):
 
 
 class HashMethod(str, Enum):
-    phash = 'phash'
+    phash = "phash"

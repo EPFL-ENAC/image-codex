@@ -1,7 +1,10 @@
-import "./registerServiceWorker";
+import axios from "axios";
+import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import Vue from "vue";
+import VueDraggableResizable from "vue-draggable-resizable";
 import "vue-draggable-resizable/dist/VueDraggableResizable.css";
-
+import App from "./App.vue";
 import {
   CompositionsApi,
   GeoApi,
@@ -9,16 +12,11 @@ import {
   ImagesApi,
   TagsApi,
 } from "./backend";
-
-import App from "./App.vue";
-import { Icon } from "leaflet";
-import Vue from "vue";
-import VueDraggableResizable from "vue-draggable-resizable";
-import axios from "axios";
 import i18n from "./i18n";
+import vuetify from "./plugins/vuetify";
+import "./registerServiceWorker";
 import router from "./router";
 import store from "./store";
-import vuetify from "./plugins/vuetify";
 
 Vue.config.productionTip = false;
 
