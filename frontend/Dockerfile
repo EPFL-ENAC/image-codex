@@ -5,7 +5,7 @@ RUN npm install
 COPY ./ .
 RUN npm run build
 
-FROM httpd:latest as production-stage
+FROM httpd:2.4 as production-stage
 RUN apt-get update && apt-get install -y \
     apache2-dev \
     libssl-dev \

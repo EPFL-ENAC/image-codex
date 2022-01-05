@@ -9,9 +9,14 @@ run-frontend:
 	$(MAKE) -C frontend run
 
 deploy-local:
-	docker-compose up --build --remove-orphans
+	docker-compose build --pull
+	docker-compose up --remove-orphans
 
-deploy-server:
+install-server:
+	ansible-galaxy install -r ansible/requirements.yml
+	ansible-playbook ansible/install.yml -i ansible/inventory.ini
+
+deploy-prod:
 	ansible-playbook ansible/deploy.yml -i ansible/inventory.ini
 
 generate-api:
