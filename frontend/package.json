@@ -12,7 +12,7 @@
     "generate:model": "rm -rf src/backend && openapi-generator-cli generate -i ../openapi.json -g typescript-axios -o src/backend"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "downloadjs": "^1.4.7",
     "leaflet": "^1.7.1",
