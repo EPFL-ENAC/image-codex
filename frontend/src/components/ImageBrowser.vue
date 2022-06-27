@@ -60,12 +60,6 @@
   </v-card>
 </template>
 
-<style scoped>
-.scrollable {
-  overflow-y: auto;
-}
-</style>
-
 <script lang="ts">
 import { TaggedImage } from "@/backend";
 import { AxiosError } from "axios";
@@ -166,3 +160,9 @@ export default class ImageBrowser extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.scrollable {
+  overflow-y: auto;
+}
+</style>

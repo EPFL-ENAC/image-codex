@@ -4,7 +4,7 @@
       <v-app-bar-title>Image Codex</v-app-bar-title>
       <v-spacer></v-spacer>
       <v-dialog v-model="usernameDialog" max-width="256" persistent>
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <v-btn v-bind="attrs" text v-on="on">
             {{ username }}
           </v-btn>
@@ -24,7 +24,7 @@
         </v-card>
       </v-dialog>
       <v-menu>
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <v-btn v-bind="attrs" text v-on="on">
             {{ $i18n.locale }}
           </v-btn>
@@ -39,7 +39,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <template v-slot:extension>
+      <template #extension>
         <v-tabs>
           <v-tab to="/territory">Territory</v-tab>
           <v-tab to="/upload">Upload</v-tab>
@@ -54,13 +54,6 @@
     <snackbar ref="snackbar"></snackbar>
   </v-app>
 </template>
-
-<style>
-/* https://vuetifyjs.com/en/getting-started/frequently-asked-questions/#scrollbar-overflow */
-html {
-  overflow-y: auto !important;
-}
-</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -104,3 +97,10 @@ export default class App extends Vue {
   }
 }
 </script>
+
+<style>
+/* https://vuetifyjs.com/en/getting-started/frequently-asked-questions/#scrollbar-overflow */
+html {
+  overflow-y: auto !important;
+}
+</style>

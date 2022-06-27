@@ -35,7 +35,7 @@
                   label="License"
                   required
                 >
-                  <template v-slot:append-outer>
+                  <template #append-outer>
                     <v-btn
                       icon
                       href="https://creativecommons.org/choose/"

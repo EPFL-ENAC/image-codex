@@ -1,7 +1,7 @@
 <template>
   <v-snackbar v-model="snackbar">
     {{ message }}
-    <template v-slot:action="{ attrs }">
+    <template #action="{ attrs }">
       <v-btn v-bind="attrs" color="primary" icon @click="snackbar = false">
         <v-icon>mdi-close</v-icon>
       </v-btn>

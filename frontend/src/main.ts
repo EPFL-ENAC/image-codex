@@ -32,7 +32,7 @@ Vue.prototype.$hashApi = new HashApi(undefined, baseUrl, axiosInstance);
 Vue.prototype.$imagesApi = new ImagesApi(undefined, baseUrl, axiosInstance);
 Vue.prototype.$tagsApi = new TagsApi(undefined, baseUrl, axiosInstance);
 
-Vue.component("vue-draggable-resizable", VueDraggableResizable);
+Vue.component("VueDraggableResizable", VueDraggableResizable);
 
 new Vue({
   router,

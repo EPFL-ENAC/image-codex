@@ -8,7 +8,7 @@
     multiple
     @change="onChange"
   >
-    <template v-slot:selection="data">
+    <template #selection="data">
       <v-chip
         :key="getValue(data.item)"
         v-bind="data.attrs"
@@ -24,13 +24,6 @@
     </template>
   </v-combobox>
 </template>
-
-<style scoped>
-.overflow {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>
 
 <script lang="ts">
 import categories from "@/assets/categories.yaml";
@@ -205,3 +198,10 @@ interface ComboboxItem {
   value: string;
 }
 </script>
+
+<style scoped>
+.overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

@@ -37,19 +37,6 @@
   </l-map>
 </template>
 
-<style scoped>
-.leaflet-container {
-  height: 1024px;
-  z-index: 0;
-}
-</style>
-<style>
-.my-image {
-  border-style: solid;
-  border-color: var(--v-primary-base);
-}
-</style>
-
 <script lang="ts">
 import { GeoImage } from "@/backend";
 import Vue from "vue";
@@ -92,3 +79,16 @@ export default class TerritoryMap extends Vue {
   }
 }
 </script>
+<style scoped>
+.leaflet-container {
+  height: 1024px;
+  z-index: 0;
+}
+</style>
+
+<style>
+.my-image {
+  border-style: solid;
+  border-color: var(--v-primary-base);
+}
+</style>

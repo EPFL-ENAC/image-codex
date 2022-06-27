@@ -1,3 +1,5 @@
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+
 module.exports = {
   chainWebpack: (config) => {
     config.module
@@ -15,6 +17,7 @@ module.exports = {
       .options({ asJSON: true })
       .loader("yaml-loader")
       .end();
+    config.plugin("polyfills").use(NodePolyfillPlugin);
   },
 
   transpileDependencies: ["vuetify"],

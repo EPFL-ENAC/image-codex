@@ -87,7 +87,7 @@
               top
               direction="bottom"
             >
-              <template v-slot:activator>
+              <template #activator>
                 <v-btn fab>
                   <v-icon>mdi-dots-horizontal</v-icon>
                 </v-btn>
@@ -132,23 +132,6 @@
     </v-card-actions>
   </v-card>
 </template>
-
-<style scoped>
-.background {
-  overflow: auto;
-  background-color: var(--v-secondary-lighten4);
-}
-.parent {
-  position: relative;
-  background-color: white;
-}
-.draggable {
-  border: none;
-}
-.v-image {
-  height: 100%;
-}
-</style>
 
 <script lang="ts">
 import { ComposedImage, Composition, TaggedImage } from "@/backend";
@@ -299,3 +282,20 @@ export default class CompositionEditor extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.background {
+  overflow: auto;
+  background-color: var(--v-secondary-lighten4);
+}
+.parent {
+  position: relative;
+  background-color: white;
+}
+.draggable {
+  border: none;
+}
+.v-image {
+  height: 100%;
+}
+</style>

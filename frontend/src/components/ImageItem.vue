@@ -2,15 +2,15 @@
   <v-card>
     <v-card-title>
       <v-text-field
-        v-if="value"
-        v-model="value.name"
+        v-if="model"
+        v-model="model.name"
         :rules="[rules.required]"
         label="Filename"
       ></v-text-field>
     </v-card-title>
     <v-card-text>
-      <v-img :src="value?.content" contain max-height="256">
-        <template v-slot:placeholder>
+      <v-img :src="model?.content" contain max-height="256">
+        <template #placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular
               indeterminate
@@ -19,37 +19,37 @@
           </v-row>
         </template>
       </v-img>
-      <div v-if="value !== undefined">
+      <div v-if="model !== undefined">
         <h1>Author</h1>
         <div>
           <span
-            v-if="value.authorChanged"
+            v-if="model.authorChanged"
             class="red--text text-decoration-line-through"
           >
-            {{ value.oldAuthor }}
+            {{ model.oldAuthor }}
           </span>
-          <span :class="{ 'green--text': value.authorChanged }">{{
-            value.newAuthor
+          <span :class="{ 'green--text': model.authorChanged }">{{
+            model.newAuthor
           }}</span>
         </div>
         <br />
         <h1>License</h1>
         <div>
           <span
-            v-if="value.copyrightChanged"
+            v-if="model.copyrightChanged"
             class="red--text text-decoration-line-through"
           >
-            {{ value.oldCopyright }}
+            {{ model.oldCopyright }}
           </span>
-          <span :class="{ 'green--text': value.authorChanged }">
-            {{ value.newCopyright }}
+          <span :class="{ 'green--text': model.authorChanged }">
+            {{ model.newCopyright }}
           </span>
         </div>
         <br />
         <h1>Tags</h1>
         <v-chip-group column>
           <v-chip
-            v-for="(tag, j) in value.removedTags"
+            v-for="(tag, j) in model.removedTags"
             :key="j"
             color="red"
             dark
@@ -65,7 +65,7 @@
         </v-chip-group>
         <v-chip-group column>
           <v-chip
-            v-for="(tag, j) in value.unmodifiedTags"
+            v-for="(tag, j) in model.unmodifiedTags"
             :key="j"
             color="grey"
             dark
@@ -77,8 +77,8 @@
             {{ tag }}
           </v-chip>
           <v-chip
-            v-for="(tag, j) in value.addedTags"
-            :key="value.unmodifiedTags.length + j"
+            v-for="(tag, j) in model.addedTags"
+            :key="model.unmodifiedTags.length + j"
             color="green"
             dark
             small
@@ -93,7 +93,7 @@
           <v-expansion-panel>
             <v-expansion-panel-header>Metadata</v-expansion-panel-header>
             <v-expansion-panel-content>
-              <pre>{{ value.metadata }}</pre>
+              <pre>{{ model.metadata }}</pre>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -107,31 +107,28 @@ import UploadImage from "@/models/upload-image";
 import rules from "@/utils/rules";
 import Vue from "vue";
 import Component from "vue-class-component";
-
-const ImageItemProps = Vue.extend({
-  props: {
-    value: UploadImage,
-  },
-});
+import { VModel } from "vue-property-decorator";
 
 @Component
-export default class ImageItem extends ImageItemProps {
+export default class ImageItem extends Vue {
   readonly rules = rules;
+  @VModel()
+  model!: UploadImage;
 
   onCloseAddTag(tag: string): void {
-    this.value.addTag(tag);
+    this.model.addTag(tag);
     this.notify();
   }
 
   onCloseRemoveTag(tag: string): void {
-    this.value.removeTag(tag);
+    this.model.removeTag(tag);
     this.notify();
   }
 
   private notify(): void {
     const image: UploadImage = Object.assign(
-      new UploadImage(this.value.name, this.value.type, this.value.content),
-      this.value
+      new UploadImage(this.model.name, this.model.type, this.model.content),
+      this.model
     );
     this.$emit("input", image);
   }
