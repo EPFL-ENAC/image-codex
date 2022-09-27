@@ -1,0 +1,4 @@
+FROM python:3.9-slim as production-stage
+WORKDIR /app
+
+RUN pip install poetry

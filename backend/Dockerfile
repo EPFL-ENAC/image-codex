@@ -1,4 +1,4 @@
-FROM python:3-alpine as build-stage
+FROM python:3.10-alpine as build-stage
 WORKDIR /app
 RUN apk add --no-cache \
     gcc \
@@ -8,7 +8,7 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 RUN poetry export --output requirements.txt
 
 
-FROM python:3.9-slim as production-stage
+FROM python:3.10-slim as production-stage
 EXPOSE 80
 WORKDIR /app
 
