@@ -50,19 +50,16 @@ make generate-api
 make deploy-local
 ```
 
-### Server
+## Build
 
-Deploy on https://enacvm0062.xaas.epfl.ch/ (alias https://image-codex-enac.epfl.ch/)
-
-Prerequisites:
-
-- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+In Docker (if you don't have the correct python version installed)
 
 ```bash
-# Install on new server
-ansible-galaxy install -r ansible/requirements.yml
-ansible-playbook ansible/install.yml -i ansible/inventory.ini
+cd backend
+docker build -f Dockerfile-build -t image-codex-build .
 
-# Deploy
-make deploy-server
+# linux
+docker run -v $(pwd):/app image-codex-build poetry update
+# cmd
+docker run -v %cd%:/app image-codex-build poetry update
 ```
