@@ -1,18 +1,20 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-slim
-
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
-
-# Copy using poetry.lock* in case it doesn't exist yet
+FROM python:3-alpine as build-stage
+WORKDIR /app
+RUN apk add --no-cache \
+    gcc \
+    musl-dev
+RUN pip install poetry
 COPY ./pyproject.toml ./poetry.lock* /app/
+RUN poetry export --output requirements.txt
 
-RUN poetry install --no-root --no-dev
+
+FROM python:3.9-slim as production-stage
+EXPOSE 80
+WORKDIR /app
+
+COPY --from=build-stage /app/requirements.txt /app
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./image_codex /app/image_codex
+
+CMD [ "uvicorn", "image_codex.main:app", "--host", "0.0.0.0", "--port", "80" ]
