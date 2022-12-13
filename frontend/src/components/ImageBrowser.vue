@@ -155,7 +155,8 @@ export default class ImageBrowser extends Vue {
       .catch(this.onApiError);
   }
 
-  onApiError(error: AxiosError): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onApiError(error: AxiosError<any>): void {
     this.$store.commit("setSnackbar", error.response?.data.detail ?? error);
   }
 }
