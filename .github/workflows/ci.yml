@@ -49,4 +49,4 @@ jobs:
       - run: |
           mkdir secrets
           touch secrets/backend.env
-      - run: docker-compose build
+      - run: docker compose build
