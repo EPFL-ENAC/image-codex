@@ -1,3 +1,6 @@
+UID := $(shell id -u)
+GID := $(shell id -g)
+
 install:
 	$(MAKE) -C backend install
 	$(MAKE) -C frontend install
@@ -17,8 +20,8 @@ lint:
 	$(MAKE) -C frontend lint
 
 deploy-local:
-	docker-compose build --pull
-	docker-compose up --remove-orphans
+	docker compose build --pull
+	docker compose up --remove-orphans
 
 install-server:
 	ansible-galaxy install -r ansible/requirements.yml
@@ -30,3 +33,6 @@ deploy-prod:
 generate-api:
 	cd backend; poetry run dotenv run python cli.py ../openapi.json
 	cd frontend; npm run generate:model
+
+generate-selfsigned-cert:
+	cd cert && OWNER="${UID}.${GID}" docker compose up --remove-orphans

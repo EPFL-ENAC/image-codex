@@ -9,9 +9,6 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--entrypoints.websecure.address=:443"
-    environment:
-      - SSL_CERT_CRT=${SSL_CERT_CRT}
-      - SSL_CERT_KEY=${SSL_CERT_KEY}
     ports:
       - "80:80"
       - "443:443"
@@ -19,9 +16,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yaml:/configuration/traefik.yml
-      - /etc/ssl:/etc/ssl
+      - ${SSL_CERT_KEY:-./cert/certificate.key}:/cert/certificate.key
+      - ${SSL_CERT_CRT:-./cert/certificate.crt}:/cert/certificate.crt
   frontend:
     build: ./frontend
+    volumes:
+      - ./frontend/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./frontend/oidc.secret.conf:/usr/local/apache2/conf/oidc.secret.conf
     labels:
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
