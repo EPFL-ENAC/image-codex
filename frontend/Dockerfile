@@ -5,7 +5,7 @@ RUN npm install
 COPY ./ .
 RUN npm run build
 
-FROM httpd:2.4 as production-stage
+FROM httpd:2.4-bookworm AS production-stage
 RUN apt-get update && apt-get install -y \
     wget
 
